@@ -1,0 +1,142 @@
+.page {
+  min-height: calc(100vh - 72px);
+  padding: 48px 8% 80px;
+  background: #f8fafc;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: #1677a8;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.profile {
+  max-width: 1000px;
+  margin: auto;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: white;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 36px;
+  background: #eaf5fa;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: white;
+  color: #1677a8;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.specialty {
+  color: #1677a8;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.profileHeader h1 {
+  margin: 6px 0;
+  color: #0f172a;
+  font-size: 2rem;
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #d97706;
+  font-weight: 600;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 40px;
+  padding: 36px;
+}
+
+.content h2 {
+  margin-bottom: 14px;
+  color: #0f172a;
+}
+
+.content p {
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.info {
+  display: grid;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.info div {
+  display: grid;
+  gap: 5px;
+}
+
+.info span {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.info strong {
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.bookingCard {
+  align-self: start;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.bookingButton {
+  display: block;
+  padding: 12px;
+  border-radius: 8px;
+  background: #1677a8;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.bookingButton:hover {
+  background: #12658e;
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 32px 5% 60px;
+  }
+
+  .profileHeader {
+    padding: 28px 24px;
+  }
+
+  .profileHeader h1 {
+    font-size: 1.5rem;
+  }
+
+  .content {
+    grid-template-columns: 1fr;
+    padding: 28px 24px;
+  }
+}

@@ -1,19 +1,17 @@
 import { Link } from "react-router-dom";
 import styles from "./Home.module.css";
+import { Stethoscope, Smile, Baby, Star } from "lucide-react";
 
 const services = [
   {
-    icon: "🩺",
     title: "Dokter Umum",
     description: "Konsultasi kesehatan umum dengan dokter terpercaya.",
   },
   {
-    icon: "🦷",
     title: "Dokter Gigi",
     description: "Perawatan dan konsultasi kesehatan gigi.",
   },
   {
-    icon: "👶",
     title: "Dokter Anak",
     description: "Konsultasi kesehatan dan tumbuh kembang anak.",
   },
@@ -49,7 +47,7 @@ const featuredDoctors = [
 function Home() {
   return (
     <main className={styles.home}>
-      {/* Hero */}
+
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <span className={styles.heroLabel}>
@@ -73,7 +71,9 @@ function Home() {
 
         <div className={styles.heroVisual}>
           <div className={styles.heroCard}>
-            <span className={styles.heroCardIcon}>🩺</span>
+            <span className={styles.heroCardIcon}>
+              <Stethoscope size={24} aria-hidden="true" />
+            </span>
 
             <div>
               <strong>MEDIVA</strong>
@@ -83,7 +83,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Layanan */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <div>
@@ -100,7 +99,17 @@ function Home() {
           {services.map((service) => (
             <div className={styles.serviceCard} key={service.title}>
               <div className={styles.serviceIcon}>
-                {service.icon}
+                {service.title === "Dokter Umum" && (
+                  <Stethoscope size={24} aria-hidden="true" />
+                )}
+
+                {service.title === "Dokter Gigi" && (
+                  <Smile size={24} aria-hidden="true" />
+                )}
+
+                {service.title === "Dokter Anak" && (
+                  <Baby size={24} aria-hidden="true" />
+                )}
               </div>
 
               <h3>{service.title}</h3>
@@ -115,7 +124,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Dokter Pilihan */}
       <section className={`${styles.section} ${styles.doctorSection}`}>
         <div className={styles.sectionHeader}>
           <div>
@@ -146,7 +154,15 @@ function Home() {
                 </span>
 
                 <div className={styles.doctorMeta}>
-                  <span>★ {doctor.rating}</span>
+                  <span>
+                    <Star
+                      size={15}
+                      fill="currentColor"
+                      aria-hidden="true"
+                    />
+                    {doctor.rating}
+                  </span>
+
                   <span>{doctor.experience}</span>
                 </div>
               </div>

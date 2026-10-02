@@ -95,7 +95,7 @@
   height: 52px;
   border-radius: 14px;
   background: #eaf5fa;
-  font-size: 25px;
+  color: #1677a8;
 }
 
 .heroCard strong {
@@ -168,7 +168,7 @@
   margin-bottom: 20px;
   border-radius: 14px;
   background: #eaf5fa;
-  font-size: 24px;
+  color: #1677a8;
 }
 
 .serviceCard h3 {
@@ -213,6 +213,13 @@
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   background: #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doctorCard:hover,
+.doctorCard:focus-within {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(15, 55, 75, 0.07);
 }
 
 .doctorAvatar {
@@ -248,6 +255,9 @@
 }
 
 .doctorMeta span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   color: #b7791f;
   font-weight: 600;
 }
