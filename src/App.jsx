@@ -7,7 +7,7 @@ import Booking from "./pages/customer/Booking";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/MEDIVA">
       <Navbar />
 
       <Routes>
