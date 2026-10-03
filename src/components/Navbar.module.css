@@ -38,6 +38,7 @@
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .link:hover {
@@ -73,6 +74,11 @@
 
   .link,
   .activeLink {
+    padding: 22px 0;
     font-size: 12px;
+  }
+
+  .activeLink::after {
+    bottom: 14px;
   }
 }

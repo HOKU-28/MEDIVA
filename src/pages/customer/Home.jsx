@@ -47,7 +47,6 @@ const featuredDoctors = [
 function Home() {
   return (
     <main className={styles.home}>
-
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <span className={styles.heroLabel}>
@@ -89,10 +88,6 @@ function Home() {
             <span className={styles.sectionLabel}>LAYANAN</span>
             <h2>Layanan Kesehatan</h2>
           </div>
-
-          <p>
-            Pilih layanan kesehatan sesuai dengan kebutuhan Anda.
-          </p>
         </div>
 
         <div className={styles.serviceGrid}>
