@@ -1,0 +1,264 @@
+.adminLayout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-bg-page);
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  width: 250px;
+  min-width: 250px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: 28px 18px 20px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
+  margin-bottom: 42px;
+}
+
+.brandIcon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: #ffffff;
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.brand h2 {
+  margin: 0;
+  color: var(--color-text-title);
+  font-size: 19px;
+  letter-spacing: 0.5px;
+}
+
+.brand span {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.menuLabel {
+  padding: 0 10px;
+  margin-bottom: 12px;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 12px;
+  color: var(--color-text-body);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.navItem:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.active {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  font-weight: 700;
+}
+
+.navIcon {
+  width: 22px;
+  text-align: center;
+  font-size: 19px;
+}
+
+.sidebarFooter {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-top: auto;
+  padding: 18px 5px 0;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.adminAvatar,
+.topbarAvatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  font-weight: 700;
+}
+
+.adminInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.adminInfo strong {
+  color: var(--color-text-title);
+  font-size: 13px;
+}
+
+.adminInfo span {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+/* MAIN CONTENT */
+
+.mainArea {
+  min-width: 0;
+  flex: 1;
+}
+
+.topbar {
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 34px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.breadcrumb {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.topbar h1 {
+  margin: 5px 0 0;
+  color: var(--color-text-title);
+  font-size: 21px;
+}
+
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-text-body);
+  font-size: 12px;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #16a34a;
+}
+
+.topbarAvatar {
+  width: 34px;
+  height: 34px;
+  margin-left: 8px;
+}
+
+.pageContent {
+  padding: 30px 34px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 205px;
+    min-width: 205px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .topbar,
+  .pageContent {
+    padding-right: 22px;
+    padding-left: 22px;
+  }
+}
+
+@media (max-width: 600px) {
+  .sidebar {
+    width: 68px;
+    min-width: 68px;
+    padding: 20px 8px;
+  }
+
+  .brand {
+    justify-content: center;
+    padding: 0;
+    margin-bottom: 32px;
+  }
+
+  .brand > div:last-child,
+  .menuLabel,
+  .navItem > span:last-child,
+  .adminInfo {
+    display: none;
+  }
+
+  .navItem {
+    justify-content: center;
+    padding: 13px 5px;
+  }
+
+  .navIcon {
+    font-size: 21px;
+  }
+
+  .sidebarFooter {
+    justify-content: center;
+    padding-top: 15px;
+  }
+
+  .topbar {
+    min-height: 76px;
+    padding: 15px;
+  }
+
+  .topbar h1 {
+    font-size: 17px;
+  }
+
+  .topbarRight {
+    gap: 6px;
+    font-size: 10px;
+  }
+
+  .topbarAvatar {
+    display: none;
+  }
+
+  .pageContent {
+    padding: 20px 15px;
+  }
+}
