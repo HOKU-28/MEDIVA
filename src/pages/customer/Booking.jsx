@@ -82,6 +82,52 @@ function Booking() {
     event.preventDefault();
 
     if (date && time) {
+      const formattedDate = new Date(date).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      // 1. Simpan ke Riwayat Konsultasi Berlangsung
+      const stored = JSON.parse(localStorage.getItem("riwayat") || "[]");
+      const filtered = stored.filter((r) => r.doctorId !== doctor.id);
+      const newEntry = {
+        id: Date.now(),
+        doctorId: doctor.id,
+        doctorName: doctor.name,
+        initials: doctor.initials,
+        specialty: doctor.specialty,
+        status: "Berlangsung",
+        date: formattedDate || date,
+        time: `${time} WIB`,
+        complaint: complaint,
+        chatId: doctor.id,
+      };
+      localStorage.setItem("riwayat", JSON.stringify([newEntry, ...filtered]));
+
+      // 2. Simpan juga ke Riwayat Terjadwal
+      const storedScheduled = JSON.parse(
+        localStorage.getItem("riwayat_terjadwal") || "[]"
+      );
+      const filteredScheduled = storedScheduled.filter(
+        (s) => s.doctorId !== doctor.id
+      );
+      const newScheduled = {
+        id: Date.now() + 1,
+        doctorId: doctor.id,
+        doctorName: doctor.name,
+        initials: doctor.initials,
+        specialty: doctor.specialty,
+        status: "Terjadwal",
+        date: formattedDate || date,
+        time: `${time} WIB`,
+        chatId: doctor.id,
+      };
+      localStorage.setItem(
+        "riwayat_terjadwal",
+        JSON.stringify([newScheduled, ...filteredScheduled])
+      );
+
       setSubmitted(true);
     }
   }
@@ -118,9 +164,26 @@ function Booking() {
             </div>
           </div>
 
-          <Link to="/dokter" className={styles.backButton}>
-            Kembali ke Cari Dokter
-          </Link>
+          <div className={styles.successActions}>
+            <Link
+              to={`/konsultasi/${doctor.id}`}
+              className={styles.chatButton}
+            >
+              💬 Mulai Konsultasi
+            </Link>
+
+            <Link
+              to="/riwayat"
+              className={styles.chatButton}
+              style={{ background: "#0d9488" }}
+            >
+              📋 Lihat di Riwayat
+            </Link>
+
+            <Link to="/dokter" className={styles.backButton}>
+              Kembali ke Cari Dokter
+            </Link>
+          </div>
         </section>
       </main>
     );

@@ -6,14 +6,17 @@ const services = [
   {
     title: "Dokter Umum",
     description: "Konsultasi kesehatan umum dengan dokter terpercaya.",
+    link: "/dokter?spesialisasi=Dokter%20Umum",
   },
   {
     title: "Dokter Gigi",
     description: "Perawatan dan konsultasi kesehatan gigi.",
+    link: "/dokter?spesialisasi=Dokter%20Gigi",
   },
   {
     title: "Dokter Anak",
     description: "Konsultasi kesehatan dan tumbuh kembang anak.",
+    link: "/dokter?spesialisasi=Dokter%20Anak",
   },
 ];
 
@@ -111,8 +114,8 @@ function Home() {
 
               <p>{service.description}</p>
 
-              <Link to="/dokter" className={styles.cardLink}>
-                Lihat Dokter →
+              <Link to={service.link} className={styles.cardLink}>
+                Lihat Dokter {service.title} →
               </Link>
             </div>
           ))}
