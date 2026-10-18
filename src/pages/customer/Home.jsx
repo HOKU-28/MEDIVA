@@ -172,6 +172,11 @@ function Home() {
           ))}
         </div>
       </section>
+
+      <footer className={styles.doctorEntry}>
+        <span>Anda tenaga medis di MEDIVA?</span>
+        <Link to="/doctor">Masuk sebagai Dokter →</Link>
+      </footer>
     </main>
   );
 }
