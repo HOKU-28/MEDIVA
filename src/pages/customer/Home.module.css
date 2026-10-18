@@ -331,3 +331,25 @@
     font-size: 28px;
   }
 }
+
+.doctorEntry {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 8%;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.doctorEntry a {
+  color: #1677a8;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.doctorEntry a:hover {
+  text-decoration: underline;
+}
