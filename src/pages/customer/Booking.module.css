@@ -307,6 +307,30 @@
   color: #ffffff;
 }
 
+.successActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.chatButton {
+  display: block;
+  padding: 13px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.chatButton:hover {
+  background: var(--color-primary-hover);
+}
+
 @media (max-width: 750px) {
   .page {
     padding: 32px 5% 60px;

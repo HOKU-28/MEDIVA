@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Star } from "lucide-react";
 import styles from "./DoctorList.module.css";
 
@@ -64,8 +64,21 @@ const specialties = [
 ];
 
 function DoctorList() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const querySpecialty = searchParams.get("spesialisasi");
+
   const [search, setSearch] = useState("");
-  const [specialty, setSpecialty] = useState("Semua Spesialisasi");
+  const [specialty, setSpecialty] = useState(
+    querySpecialty || "Semua Spesialisasi"
+  );
+
+  useEffect(() => {
+    if (querySpecialty) {
+      setSpecialty(querySpecialty);
+    } else {
+      setSpecialty("Semua Spesialisasi");
+    }
+  }, [querySpecialty]);
 
   useEffect(() => {
     const savedScroll = sessionStorage.getItem("doctorListScroll");
@@ -83,6 +96,17 @@ function DoctorList() {
       window.scrollTo(0, 0);
     }
   }, []);
+
+  function handleSpecialtyChange(e) {
+    const val = e.target.value;
+    setSpecialty(val);
+    if (val === "Semua Spesialisasi") {
+      searchParams.delete("spesialisasi");
+    } else {
+      searchParams.set("spesialisasi", val);
+    }
+    setSearchParams(searchParams, { replace: true });
+  }
 
   const filteredDoctors = doctors.filter((doctor) => {
     const nameMatch = doctor.name
@@ -115,7 +139,7 @@ function DoctorList() {
 
         <select
           value={specialty}
-          onChange={(e) => setSpecialty(e.target.value)}
+          onChange={handleSpecialtyChange}
           className={styles.select}
         >
           {specialties.map((item) => (
