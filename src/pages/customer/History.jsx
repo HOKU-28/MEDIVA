@@ -102,7 +102,6 @@ function History() {
 
     load();
 
-    // Dengarkan perubahan localStorage dari tab lain
     window.addEventListener("storage", load);
     return () => window.removeEventListener("storage", load);
   }, [activeTab]);
@@ -299,7 +298,6 @@ function History() {
 
       <div className={styles.list}>{renderList()}</div>
 
-      {/* Modal Konfirmasi Hapus */}
       {deleteTarget && (
         <div
           className={styles.overlay}

@@ -88,7 +88,6 @@ function Booking() {
         year: "numeric",
       });
 
-      // 1. Simpan ke Riwayat Konsultasi Berlangsung
       const stored = JSON.parse(localStorage.getItem("riwayat") || "[]");
       const filtered = stored.filter((r) => r.doctorId !== doctor.id);
       const newEntry = {
@@ -105,7 +104,6 @@ function Booking() {
       };
       localStorage.setItem("riwayat", JSON.stringify([newEntry, ...filtered]));
 
-      // 2. Simpan juga ke Riwayat Terjadwal
       const storedScheduled = JSON.parse(
         localStorage.getItem("riwayat_terjadwal") || "[]"
       );

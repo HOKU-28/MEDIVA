@@ -1,4 +1,3 @@
-
 import { useMemo, useState } from "react";
 import styles from "./AdminServices.module.css";
 import { Pencil, Power, Trash2 } from "lucide-react";
@@ -225,7 +224,6 @@ function AdminServices() {
 
     return (
         <div className={styles.page}>
-            {/* Header */}
             <div className={styles.pageHeader}>
                 <div>
                     <span className={styles.eyebrow}>MANAJEMEN LAYANAN</span>
@@ -245,7 +243,6 @@ function AdminServices() {
                 </button>
             </div>
 
-            {/* Informasi */}
             <div className={styles.infoBanner}>
                 <span className={styles.infoIcon}>ⓘ</span>
                 <div>
@@ -257,7 +254,6 @@ function AdminServices() {
                 </div>
             </div>
 
-            {/* Statistik */}
             <div className={styles.statsGrid}>
                 <div className={styles.statCard}>
                     <div className={`${styles.statIcon} ${styles.blueIcon}`}>
@@ -293,7 +289,6 @@ function AdminServices() {
                 </div>
             </div>
 
-            {/* Daftar layanan */}
             <section className={styles.tableCard}>
                 <div className={styles.tableHeader}>
                     <div>
@@ -377,37 +372,6 @@ function AdminServices() {
                                     </td>
 
                                     <td>
-                                        {/* <div className={styles.actions}>
-                                            <button
-                                                type="button"
-                                                className={styles.editButton}
-                                                onClick={() => openEditModal(service)}
-                                            >
-                                                Edit
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                className={
-                                                    service.status === "Aktif"
-                                                        ? styles.disableButton
-                                                        : styles.enableButton
-                                                }
-                                                onClick={() => toggleStatus(service)}
-                                            >
-                                                {service.status === "Aktif"
-                                                    ? "Nonaktifkan"
-                                                    : "Aktifkan"}
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                className={styles.deleteButton}
-                                                onClick={() => handleDelete(service)}
-                                            >
-                                                Hapus
-                                            </button>
-                                        </div> */}
 
                                         <div className={styles.actions}>
                                             <button
@@ -464,7 +428,6 @@ function AdminServices() {
                 </div>
             </section>
 
-            {/* Modal tambah/edit */}
             {isModalOpen && (
                 <div
                     className={styles.modalOverlay}

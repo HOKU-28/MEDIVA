@@ -1,4 +1,3 @@
-
 import { useMemo, useState } from "react";
 import {
     Users,
@@ -539,7 +538,6 @@ function AdminUsers() {
                 </div>
             </section>
 
-            {/* Modal detail pasien */}
             {selectedUser && (
                 <div
                     className={styles.modalOverlay}
@@ -724,7 +722,6 @@ function AdminUsers() {
                 </div>
             )}
 
-            {/* Modal edit pasien */}
             {isEditModalOpen && (
                 <div
                     className={styles.modalOverlay}
@@ -826,14 +823,6 @@ function AdminUsers() {
                                     />
                                 </div>
 
-                                {/* <div className={styles.infoNotice}>
-                                    <ShieldCheck size={17} />
-                                    <span>
-                                        Perubahan ini hanya mengubah data tampilan
-                                        lokal. Pastikan API dan hak akses diterapkan
-                                        sebelum digunakan dengan data pasien asli.
-                                    </span>
-                                </div> */}
                             </div>
 
                             <div className={styles.modalFooter}>

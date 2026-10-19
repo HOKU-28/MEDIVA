@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
     Link,
@@ -61,9 +60,18 @@ export default function Login() {
             const account = login(form);
 
             const requestedPath = location.state?.from?.pathname;
-            const destination = getHomeByRole(account.role);
+            const defaultHome = getHomeByRole(account.role);
+            let destination = defaultHome;
 
-            // Jangan izinkan redirect ke halaman role lain.
+            if (
+                account.role === "customer" &&
+                requestedPath &&
+                !requestedPath.startsWith("/doctor") &&
+                !requestedPath.startsWith("/admin")
+            ) {
+                destination = requestedPath;
+            }
+
             navigate(destination, { replace: true });
         } catch (err) {
             setError(err.message || "Login gagal.");
@@ -153,8 +161,9 @@ export default function Login() {
 
                 <div className={styles.demoNotice}>
                     <strong>Akun demo development</strong>
-                    <span>Admin: admin@mediva.test / Admin123!</span>
+                    <span>Pasien: andi.pratama@mediva.test / Customer123!</span>
                     <span>Dokter: doctor@mediva.test / Doctor123!</span>
+                    <span>Admin: admin@mediva.test / Admin123!</span>
                 </div>
             </section>
         </main>

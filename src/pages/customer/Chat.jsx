@@ -12,7 +12,6 @@ const doctors = [
   { id: 6, name: "Dr. Kevin Wijaya", initials: "KW", specialty: "Dokter Umum", experience: "5 tahun" },
 ];
 
-// Opsi Cepat Tahap 1: Keluhan Utama Sesuai Spesialisasi
 const specialtyOptions = {
   "Dokter Umum": [
     "🤒 Demam & Sakit Kepala",
@@ -46,28 +45,24 @@ const specialtyOptions = {
   ],
 };
 
-// Opsi Cepat Tahap 2: Durasi Gejala
 const durationOptions = [
   "Baru hari ini terasa",
   "Sudah 2 - 3 hari",
   "Sudah lebih dari 1 minggu",
 ];
 
-// Opsi Cepat Tahap 3: Tindakan / Obat yang Pernah Diminum
 const treatmentOptions = [
   "Belum minum obat apapun",
   "Sudah minum Parasetamol",
   "Sudah minum obat warung biasa",
 ];
 
-// Opsi Cepat Tahap 4: Tindak Lanjut
 const followUpOptions = [
   "💊 Rekomendasi obat yang tepat apa ya Dok?",
   "🏥 Apakah perlu pemeriksaan fisik ke klinik?",
   "🙏 Terima kasih banyak atas sarannya, Dok!",
 ];
 
-// Opsi Cepat Tahap 5: Selesai / Lanjutan
 const completedOptions = [
   "🔄 Tanya keluhan lain",
   "✅ Akhiri Konsultasi",
@@ -91,16 +86,13 @@ function readStorageList(key, fallback = []) {
   }
 }
 
-// Logika Respons Dokter Pintar (Simulasi Medis Natural & Akurat)
 function generateDoctorReply(text, doctor, stage) {
   const lower = text.toLowerCase();
 
-  // 1. Jika pengguna ingin mengakhiri atau berterima kasih
   if (lower.includes("terima kasih") || lower.includes("makasih")) {
     return `Sama-sama! Senang bisa membantu Anda. Tetap jaga kesehatan dan istirahat yang cukup ya. Jika sesi sudah selesai, silakan tekan tombol 'Akhiri Konsultasi' di kanan atas.`;
   }
 
-  // 2. Berdasarkan kata kunci keluhan
   if (lower.includes("demam") || lower.includes("panas")) {
     return `Baik, keluhan demam biasanya merupakan respons tubuh melawan infeksi atau peradangan. Sudah berapa lama demam ini dirasakan dan apakah disertai gejala menggigil?`;
   }
@@ -126,27 +118,22 @@ function generateDoctorReply(text, doctor, stage) {
     return `Baik, hindari mengucek mata ya. Apakah matanya mengeluarkan kotoran berlebih atau terasa peka terhadap cahaya? Sejak kapan keluhan ini dirasakan?`;
   }
 
-  // 3. Berdasarkan durasi
   if (lower.includes("hari") || lower.includes("minggu") || lower.includes("baru")) {
     return `Terima kasih atas informasinya. Sebelum berkonsultasi ke saya, apakah sudah sempat mengonsumsi obat tertentu untuk meredakan gejalanya?`;
   }
 
-  // 4. Berdasarkan tindakan obat
   if (lower.includes("belum") || lower.includes("parasetamol") || lower.includes("warung") || lower.includes("obat")) {
     return `Baik, saya pahami. Untuk penanganan awal: pastikan istirahat cukup, minum air putih hangat minimal 2 liter sehari, dan hindari pemicu stres/makanan iritan. Anda bisa mengonsumsi obat penurun gejala sesuai aturan dosis. Ada hal spesifik yang ingin ditanyakan terkait pengobatan?`;
   }
 
-  // 5. Rekomendasi obat
   if (lower.includes("rekomendasi") || lower.includes("resep")) {
     return `Untuk penanganan mandiri awal, Anda bisa gunakan Paracetamol 500mg (1 tablet tiap 6-8 jam setelah makan bila nyeri/demam), serta vitamin C 500mg untuk daya tahan tubuh. Bila dalam 3 hari keluhan tidak berkurang, disarankan datang ke klinik ya.`;
   }
 
-  // 6. Pertanyaan pemeriksaan fisik
   if (lower.includes("klinik") || lower.includes("periksa") || lower.includes("lab")) {
     return `Jika dalam 3 hari ke depan gejala tidak membaik, demam mencapai lebih dari 38.5°C, atau timbul rasa sesak/nyeri berat, sebaiknya segera periksa langsung ke klinik terdekat agar dapat dilakukan pemeriksaan fisik dan laboratorium ya.`;
   }
 
-  // 7. Fallback natural cerdas
   return `Baik, saya catat penjelasannya. Langkah awal yang paling penting adalah cukup istirahat dan hidrasi cairan ya. Silakan ceritakan jika ada gejala tambahan lainnya.`;
 }
 
@@ -164,11 +151,9 @@ function Chat() {
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Simpan ke riwayat & tampilkan salam pembuka dokter
   useEffect(() => {
     if (!doctor) return;
 
-    // Simpan ke localStorage riwayat berlangsung
     const stored = readStorageList("riwayat");
     const filtered = stored.filter((r) => r.doctorId !== id);
     const newEntry = {
@@ -187,7 +172,6 @@ function Chat() {
     };
     localStorage.setItem("riwayat", JSON.stringify([newEntry, ...filtered]));
 
-    // Salam pembuka dokter
     const openings = {
       "Dokter Umum": `Halo! Saya ${doctor.name}. Silakan ceritakan keluhan kesehatan Anda, atau pilih salah satu keluhan umum di bawah ini ya.`,
       "Dokter Gigi": `Selamat datang! Saya ${doctor.name}. Ada keluhan seputar gigi atau mulut yang ingin dikonsultasikan hari ini?`,
@@ -205,7 +189,6 @@ function Chat() {
     }, 450);
 
     return () => clearTimeout(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {
@@ -221,7 +204,6 @@ function Chat() {
     );
   }
 
-  // Menentukan daftar pilihan cepat yang aktif sesuai stage
   const getQuickOptions = () => {
     if (chatStage === 0) {
       return specialtyOptions[doctor.specialty] || specialtyOptions["Dokter Umum"];
@@ -238,14 +220,12 @@ function Chat() {
     return completedOptions;
   };
 
-  // Fungsi pengiriman pesan (baik dari tombol klik Telegram-style atau input ketik)
   function handleSendText(text) {
     if (!text || !text.trim() || isTyping) return;
 
     const trimmed = text.trim();
     setInput("");
 
-    // Jika user klik "Akhiri Konsultasi" dari pilihan cepat
     if (trimmed.includes("Akhiri Konsultasi")) {
       setShowEndModal(true);
       return;
@@ -261,7 +241,6 @@ function Chat() {
     setMessages((prev) => [...prev, userMsg]);
     setIsTyping(true);
 
-    // Simulasi jeda dokter mengetik (600 - 800ms)
     setTimeout(() => {
       const replyText = generateDoctorReply(trimmed, doctor, nextStage);
       setMessages((prev) => [
@@ -278,25 +257,20 @@ function Chat() {
     handleSendText(input);
   }
 
-  // Fungsi Akhiri Konsultasi & Simpan ke Selesai
   function handleEndConsultation() {
-    // Ambil keluhan atau pesan terakhir dari user
     const lastUserMsg = [...messages].reverse().find((m) => m.from === "user")?.text;
     const summaryText = lastUserMsg
       ? `Keluhan: "${lastUserMsg.slice(0, 80)}${lastUserMsg.length > 80 ? "..." : ""}". Sesi konsultasi selesai.`
       : `Konsultasi telah selesai bersama ${doctor.name}.`;
 
-    // 1. Hapus dari riwayat Berlangsung
     const stored = readStorageList("riwayat");
     const updatedOngoing = stored.filter((r) => r.doctorId !== id);
     localStorage.setItem("riwayat", JSON.stringify(updatedOngoing));
 
-    // 2. Hapus juga dari riwayat Terjadwal jika ada
     const storedScheduled = readStorageList("riwayat_terjadwal");
     const updatedScheduled = storedScheduled.filter((s) => s.doctorId !== id);
     localStorage.setItem("riwayat_terjadwal", JSON.stringify(updatedScheduled));
 
-    // 3. Masukkan ke riwayat Selesai
     const storedDone = (() => {
       try {
         const value = localStorage.getItem("riwayat_selesai");
@@ -365,7 +339,6 @@ function Chat() {
 
   return (
     <div className={styles.chatPage}>
-      {/* Header */}
       <header className={styles.chatHeader}>
         <button className={styles.backBtn} onClick={() => navigate(-1)} aria-label="Kembali">
           <ArrowLeft size={20} />
@@ -394,13 +367,11 @@ function Chat() {
         </div>
       </header>
 
-      {/* Status Bar */}
       <div className={styles.statusBar}>
         <span className={styles.statusBadge}>● Konsultasi Sedang Berlangsung</span>
         <span className={styles.aiActiveBadge}>💬 Chat Dokter Aktif</span>
       </div>
 
-      {/* Messages */}
       <div className={styles.messages}>
         {messages.map((msg) => (
           <div
@@ -422,7 +393,6 @@ function Chat() {
           </div>
         ))}
 
-        {/* Typing indicator */}
         {isTyping && (
           <div className={`${styles.msgRow} ${styles.msgDoctor}`}>
             <div className={styles.msgAvatar}>{doctor.initials}</div>
@@ -437,7 +407,6 @@ function Chat() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Telegram-style Quick Options / Keyboard Chips */}
       {currentOptions && currentOptions.length > 0 && (
         <div className={styles.quickBar}>
           <span className={styles.quickLabel}>
@@ -459,7 +428,6 @@ function Chat() {
         </div>
       )}
 
-      {/* Input Form */}
       <form className={styles.inputArea} onSubmit={handleFormSubmit}>
         <input
           ref={inputRef}
@@ -481,7 +449,6 @@ function Chat() {
         </button>
       </form>
 
-      {/* Modal Popup Konfirmasi Akhiri Konsultasi */}
       {showEndModal && (
         <div
           className={styles.modalOverlay}

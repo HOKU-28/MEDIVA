@@ -370,31 +370,6 @@
   border-radius: 50%;
   background: currentColor;
 }
-/* 
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.actions button {
-  padding: 7px 9px;
-  border: 1px solid transparent;
-  border-radius: 7px;
-  background: transparent;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.editButton {
-  color: var(--color-primary);
-}
-
-.editButton:hover {
-  background: var(--color-primary-light);
-} */
 
 .disableButton {
   color: #b7791f;
@@ -411,14 +386,6 @@
 .enableButton:hover {
   background: #eaf8ef;
 }
-
-/* .deleteButton {
-  color: #dc4545;
-}
-
-.deleteButton:hover {
-  background: #fff1f0;
-} */
 
 .emptyState {
   display: flex;
@@ -445,8 +412,6 @@
   color: var(--color-text-muted);
   font-size: 12px;
 }
-
-/* Modal */
 
 .modalOverlay {
   position: fixed;
@@ -694,17 +659,12 @@
   background: #16a34a;
 }
 
-/* ================================
-   TABLE ACTIONS - MEDIVA
-================================ */
-
 .actions {
   display: flex;
   align-items: center;
   gap: 7px;
 }
 
-/* Tombol Edit & Delete */
 .editButton,
 .deleteButton {
   display: inline-flex;
@@ -729,7 +689,6 @@
     transform 0.2s ease;
 }
 
-/* Edit */
 .editButton {
   color: #64748b;
   background: #ffffff;
@@ -741,7 +700,6 @@
   border-color: #b9ddec;
 }
 
-/* Delete */
 .deleteButton {
   color: #dc2626;
   background: #ffffff;
@@ -753,7 +711,6 @@
   border-color: #dc2626;
 }
 
-/* Ukuran ikon */
 .editButton svg,
 .deleteButton svg {
   width: 17px;
@@ -762,13 +719,11 @@
   flex-shrink: 0;
 }
 
-/* Efek klik */
 .editButton:active,
 .deleteButton:active {
   transform: scale(0.96);
 }
 
-/* Fokus keyboard */
 .editButton:focus-visible,
 .deleteButton:focus-visible {
   outline: 3px solid rgba(22, 119, 168, 0.25);

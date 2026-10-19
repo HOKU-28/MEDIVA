@@ -4,6 +4,7 @@ import styles from "./Navbar.module.css";
 const navItems = [
   { label: "Home", path: "/" },
   { label: "Cari Dokter", path: "/dokter" },
+  { label: "Blogs", path: "/blogs" },
   { label: "Riwayat", path: "/riwayat" },
   { label: "Profil", path: "/profil" },
 ];
