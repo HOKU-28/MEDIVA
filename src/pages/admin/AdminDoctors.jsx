@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import styles from "./AdminDoctors.module.css";
 import { Pencil, Trash2 } from "lucide-react";
@@ -397,23 +396,6 @@ function AdminDoctors() {
                                     </td>
 
                                     <td>
-                                        {/* <div className={styles.actions}>
-                                            <button
-                                                type="button"
-                                                className={styles.editButton}
-                                                onClick={() => openEditModal(doctor)}
-                                            >
-                                                Edit
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                className={styles.deleteButton}
-                                                onClick={() => handleDelete(doctor)}
-                                            >
-                                                Hapus
-                                            </button>
-                                        </div> */}
 
                                         <div className={styles.actions}>
                                             <button

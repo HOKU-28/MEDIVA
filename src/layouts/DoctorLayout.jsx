@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   CalendarDays,
   ClipboardList,
   UserRound,
-  ArrowLeft,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "../Context/AuthContext";
 import {
   initialDoctor,
   initialSchedule,
@@ -23,7 +24,6 @@ const menu = [
 ];
 
 function DoctorLayout() {
-  // State dibagikan ke semua halaman dokter lewat Outlet context
   const [doctor, setDoctor] = useState(initialDoctor);
   const [schedule, setSchedule] = useState(initialSchedule);
   const [leaves, setLeaves] = useState(initialLeaves);
@@ -33,6 +33,14 @@ function DoctorLayout() {
     setAppointments((list) =>
       list.map((item) => (item.id === id ? { ...item, ...patch } : item)),
     );
+  }
+
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate("/login", { replace: true });
   }
 
   const context = {
@@ -78,10 +86,15 @@ function DoctorLayout() {
           ))}
         </nav>
 
-        <NavLink to="/" className={styles.exit}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          <span>Kembali ke situs</span>
-        </NavLink>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className={styles.exit}
+          aria-label="Keluar dari akun dokter"
+        >
+          <LogOut size={16} aria-hidden="true" />
+          <span>Keluar</span>
+        </button>
       </aside>
 
       <main className={styles.content}>

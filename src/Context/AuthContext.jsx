@@ -1,4 +1,3 @@
-
 import {
     createContext,
     useContext,
@@ -10,9 +9,20 @@ const AuthContext = createContext(null);
 const USERS_KEY = "mediva_demo_users";
 const SESSION_KEY = "mediva_demo_session";
 
-// Akun demo untuk development saja.
-// Jangan menggunakan password atau penyimpanan ini di production.
 const demoUsers = [
+    {
+        id: "demo-customer",
+        name: "Andi Pratama",
+        email: "andi.pratama@mediva.test",
+        password: "Customer123!",
+        role: "customer",
+        status: "Aktif",
+        phone: "0812-3456-7890",
+        address: "Jl. Merdeka No. 12, Jakarta Selatan",
+        dob: "1995-08-15",
+        bloodType: "O+",
+        totalConsultations: 3,
+    },
     {
         id: "demo-admin",
         name: "Admin MEDIVA",
@@ -43,7 +53,6 @@ function readUsers() {
             }
         }
     } catch {
-        // Abaikan data demo yang rusak.
     }
 
     return [];
@@ -104,10 +113,14 @@ export function AuthProvider({ children }) {
     function login({ email, password }) {
         const cleanEmail = email.trim().toLowerCase();
 
-        const account = [
-            ...demoUsers,
+        const allAccounts = [
             ...registeredUsers,
-        ].find(
+            ...demoUsers.filter(
+                (d) => !registeredUsers.some((r) => r.id === d.id)
+            ),
+        ];
+
+        const account = allAccounts.find(
             (item) =>
                 item.email.toLowerCase() === cleanEmail &&
                 item.password === password
@@ -121,12 +134,16 @@ export function AuthProvider({ children }) {
             throw new Error("Akun ini sedang dinonaktifkan.");
         }
 
-        // Simpan hanya informasi sesi, bukan password.
         const session = {
             id: account.id,
             name: account.name,
             email: account.email,
             role: account.role,
+            phone: account.phone || "",
+            dob: account.dob || "",
+            address: account.address || "",
+            bloodType: account.bloodType || "",
+            totalConsultations: account.totalConsultations ?? 0,
         };
 
         localStorage.setItem(
@@ -137,6 +154,176 @@ export function AuthProvider({ children }) {
         setUser(session);
 
         return session;
+    }
+
+    function updateProfile({ name, email, phone, dob, address }) {
+        if (!user) {
+            throw new Error("Tidak ada sesi pengguna yang aktif.");
+        }
+
+        const cleanName = (name || "").trim();
+        const cleanEmail = (email || "").trim().toLowerCase();
+        const cleanPhone = (phone || "").trim();
+        const cleanDob = (dob || "").trim();
+        const cleanAddress = (address || "").trim();
+
+        if (!cleanName) {
+            throw new Error("Nama lengkap wajib diisi.");
+        }
+
+        if (!cleanEmail) {
+            throw new Error("Email wajib diisi.");
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(cleanEmail)) {
+            throw new Error("Format email tidak valid.");
+        }
+
+        const allUsers = [...demoUsers, ...registeredUsers];
+        const emailExists = allUsers.some(
+            (item) =>
+                item.id !== user.id &&
+                item.email.toLowerCase() === cleanEmail
+        );
+
+        if (emailExists) {
+            throw new Error("Email sudah terdaftar pada akun lain.");
+        }
+
+        if (cleanDob) {
+            const birthDate = new Date(`${cleanDob}T00:00:00`);
+            const today = new Date();
+            today.setHours(23, 59, 59, 999);
+            if (birthDate > today) {
+                throw new Error("Tanggal lahir tidak boleh di masa depan.");
+            }
+        }
+
+        let foundInRegistered = false;
+        const updatedUsers = registeredUsers.map((item) => {
+            if (item.id === user.id) {
+                foundInRegistered = true;
+                return {
+                    ...item,
+                    name: cleanName,
+                    email: cleanEmail,
+                    phone: cleanPhone,
+                    dob: cleanDob,
+                    address: cleanAddress,
+                };
+            }
+            return item;
+        });
+
+        if (foundInRegistered) {
+            localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
+            setRegisteredUsers(updatedUsers);
+        } else {
+            const demoAccount = demoUsers.find((item) => item.id === user.id);
+            if (demoAccount) {
+                const updatedDemoUser = {
+                    ...demoAccount,
+                    name: cleanName,
+                    email: cleanEmail,
+                    phone: cleanPhone,
+                    dob: cleanDob,
+                    address: cleanAddress,
+                };
+                const newRegisteredUsers = [...registeredUsers, updatedDemoUser];
+                localStorage.setItem(
+                    USERS_KEY,
+                    JSON.stringify(newRegisteredUsers)
+                );
+                setRegisteredUsers(newRegisteredUsers);
+            }
+        }
+
+        const updatedSession = {
+            ...user,
+            name: cleanName,
+            email: cleanEmail,
+            phone: cleanPhone,
+            dob: cleanDob,
+            address: cleanAddress,
+        };
+
+        localStorage.setItem(SESSION_KEY, JSON.stringify(updatedSession));
+        setUser(updatedSession);
+
+        return updatedSession;
+    }
+
+    function changePassword({ currentPassword, newPassword, confirmPassword }) {
+        if (!user) {
+            throw new Error("Tidak ada sesi pengguna yang aktif.");
+        }
+
+        if (!currentPassword) {
+            throw new Error("Password saat ini wajib diisi.");
+        }
+
+        if (!newPassword) {
+            throw new Error("Password baru wajib diisi.");
+        }
+
+        if (newPassword.length < 8) {
+            throw new Error("Password baru minimal 8 karakter.");
+        }
+
+        if (newPassword === currentPassword) {
+            throw new Error(
+                "Password baru tidak boleh sama dengan password saat ini."
+            );
+        }
+
+        if (confirmPassword !== undefined && newPassword !== confirmPassword) {
+            throw new Error("Konfirmasi password tidak cocok.");
+        }
+
+        const allUsers = [...demoUsers, ...registeredUsers];
+        const account = allUsers.find((item) => item.id === user.id);
+
+        if (!account) {
+            throw new Error("Akun pengguna tidak ditemukan.");
+        }
+
+        if (account.password !== currentPassword) {
+            throw new Error("Password saat ini tidak sesuai.");
+        }
+
+        let foundInRegistered = false;
+        const updatedUsers = registeredUsers.map((item) => {
+            if (item.id === user.id) {
+                foundInRegistered = true;
+                return {
+                    ...item,
+                    password: newPassword,
+                };
+            }
+            return item;
+        });
+
+        if (foundInRegistered) {
+            localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
+            setRegisteredUsers(updatedUsers);
+        } else {
+            const demoAccount = demoUsers.find((item) => item.id === user.id);
+            if (demoAccount) {
+                const updatedDemoUser = {
+                    ...demoAccount,
+                    password: newPassword,
+                };
+                const newRegisteredUsers = [...registeredUsers, updatedDemoUser];
+                localStorage.setItem(
+                    USERS_KEY,
+                    JSON.stringify(newRegisteredUsers)
+                );
+                setRegisteredUsers(newRegisteredUsers);
+            }
+        }
+
+        return true;
     }
 
     function logout() {
@@ -151,6 +338,8 @@ export function AuthProvider({ children }) {
                 register,
                 login,
                 logout,
+                updateProfile,
+                changePassword,
                 isAuthenticated: Boolean(user),
             }}
         >

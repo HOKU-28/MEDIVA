@@ -1,7 +1,3 @@
-/* ========================================
-   MEDIVA ADMIN DASHBOARD
-======================================== */
-
 .dashboard {
   --primary: var(--color-primary);
   --primary-dark: var(--color-primary-hover);
@@ -21,7 +17,6 @@
   color: var(--text);
 }
 
-/* Header dashboard */
 .welcome {
   background:
     radial-gradient(
@@ -33,13 +28,11 @@
   border-color: #d3e9f2;
 }
 
-/* Ikon statistik */
 .summaryIcon {
   background: var(--color-primary-light);
   color: var(--color-primary);
 }
 
-/* Tombol utama */
 .primaryButton {
   background: var(--color-primary);
   color: #ffffff;
@@ -49,7 +42,6 @@
   background: var(--color-primary-hover);
 }
 
-/* Pencarian dan input saat aktif */
 .searchBox:focus-within,
 .formField input:focus,
 .formField select:focus,
@@ -58,14 +50,12 @@
   box-shadow: 0 0 0 3px rgba(22, 119, 168, 0.09);
 }
 
-/* Avatar pasien */
 .patientAvatar {
   background: var(--color-primary-light);
   border-color: #d3e9f2;
   color: var(--color-primary);
 }
 
-/* Badge status */
 .menunggu {
   background: #fffbeb;
   border-color: #fde68a;
@@ -89,8 +79,6 @@
   border-color: #fecaca;
   color: #b91c1c;
 }
-
-/* Fokus keyboard */
 
 .primaryButton:focus-visible,
 .secondaryButton:focus-visible,
@@ -138,10 +126,6 @@
   font-size: 13px;
   font-weight: 600;
 }
-
-/* ========================================
-   SUMMARY CARDS
-======================================== */
 
 .summaryGrid {
   display: grid;
@@ -206,10 +190,6 @@
   font-size: 12px;
 }
 
-/* ========================================
-   APPOINTMENT SECTION
-======================================== */
-
 .tableSection {
   min-width: 0;
   overflow: hidden;
@@ -241,10 +221,6 @@
   font-size: 13px;
   line-height: 1.6;
 }
-
-/* ========================================
-   BUTTONS
-======================================== */
 
 .primaryButton,
 .secondaryButton {
@@ -294,10 +270,6 @@
   outline: 3px solid #93c5fd;
   outline-offset: 3px;
 }
-
-/* ========================================
-   SEARCH & FILTER
-======================================== */
 
 .toolbar {
   display: flex;
@@ -361,10 +333,6 @@
 .filterSelect:focus {
   border-color: #93c5fd;
 }
-
-/* ========================================
-   TABLE
-======================================== */
 
 .tableWrapper {
   width: 100%;
@@ -463,10 +431,6 @@
   white-space: normal !important;
 }
 
-/* ========================================
-   STATUS BADGES
-======================================== */
-
 .statusBadge {
   display: inline-flex;
   align-items: center;
@@ -503,10 +467,6 @@
   color: #b91c1c;
 }
 
-/* ========================================
-   TABLE ACTIONS
-======================================== */
-
 .actions {
   display: flex;
   align-items: center;
@@ -529,7 +489,6 @@
     background 0.2s ease,
     border-color 0.2s ease;
 }
-/* Delete */
 .deleteButton {
   color: #dc2626;
   background: #ffffff;
@@ -545,10 +504,6 @@
   background: #eff6ff;
   color: #2563eb;
 }
-
-/* ========================================
-   MODAL OVERLAY
-======================================== */
 
 .modalOverlay {
   position: fixed;
@@ -623,10 +578,6 @@
   color: #dc2626;
 }
 
-/* ========================================
-   DETAIL PATIENT
-======================================== */
-
 .detailSectionTitle {
   display: flex;
   align-items: center;
@@ -699,10 +650,6 @@
   line-height: 1.8;
   overflow-wrap: anywhere;
 }
-
-/* ========================================
-   FORM
-======================================== */
 
 .modal form {
   padding: 22px 26px 0;
@@ -790,10 +737,6 @@
   grid-column: 1 / -1;
 }
 
-/* ========================================
-   MODAL FOOTER
-======================================== */
-
 .modalFooter {
   display: flex;
   justify-content: flex-end;
@@ -809,10 +752,6 @@
   margin-right: -26px;
   margin-left: -26px;
 }
-
-/* ========================================
-   ANIMATIONS
-======================================== */
 
 @keyframes fadeIn {
   from {
@@ -835,10 +774,6 @@
     transform: translateY(0) scale(1);
   }
 }
-
-/* ========================================
-   RESPONSIVE
-======================================== */
 
 @media (max-width: 1100px) {
   .summaryGrid {
@@ -1063,8 +998,6 @@
   letter-spacing: 1.2px;
 }
 
-/* Statistik */
-
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1140,8 +1073,6 @@
   letter-spacing: -0.7px;
 }
 
-/* Kartu tabel */
-
 .contentCard {
   min-width: 0;
   overflow: hidden;
@@ -1175,8 +1106,6 @@
   font-size: 12px;
   font-weight: 700;
 }
-
-/* Pencarian dan filter */
 
 .toolbar {
   display: flex;
@@ -1256,8 +1185,6 @@
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-light);
 }
-
-/* Tabel */
 
 .tableWrapper {
   width: 100%;
@@ -1387,8 +1314,6 @@
   border-radius: var(--radius-sm);
 }
 
-/* Status */
-
 .statusBadge {
   display: inline-flex;
   align-items: center;
@@ -1430,8 +1355,6 @@ button.statusBadge:hover {
   border-radius: 50%;
 }
 
-/* Tombol aksi */
-
 .actions {
   display: flex;
   align-items: center;
@@ -1455,18 +1378,6 @@ button.statusBadge:hover {
     color 0.2s,
     border-color 0.2s;
 }
-/* 
-.viewButton {
-  color: var(--color-primary);
-  background: var(--color-primary-light);
-  border-color: #d7edf7;
-}
-
-.viewButton:hover {
-  color: white;
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-} */
 
 .editButton {
   color: #64748b;
@@ -1478,8 +1389,6 @@ button.statusBadge:hover {
   background: var(--color-primary-light);
   border-color: #b9ddec;
 }
-
-/* Footer dan kondisi kosong */
 
 .tableFooter {
   display: flex;
@@ -1521,8 +1430,6 @@ button.statusBadge:hover {
   margin: 0;
   font-size: 13px;
 }
-
-/* Modal */
 
 .modalOverlay {
   position: fixed;
@@ -1597,8 +1504,6 @@ button.statusBadge:hover {
   background: #fcfdfe;
   border-top: 1px solid var(--color-border-subtle);
 }
-
-/* Profil pasien */
 
 .profileBanner {
   display: flex;
@@ -1858,8 +1763,6 @@ button.statusBadge:hover {
   line-height: 1.6;
 }
 
-/* Form edit */
-
 .formGroup {
   display: flex;
   flex-direction: column;
@@ -1933,8 +1836,6 @@ button.statusBadge:hover {
   color: var(--color-primary);
 }
 
-/* Tombol modal */
-
 .primaryButton,
 .cancelButton {
   display: inline-flex;
@@ -1980,8 +1881,6 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
-/* Animasi */
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -2001,8 +1900,6 @@ button:focus-visible {
     transform: translateY(0) scale(1);
   }
 }
-
-/* Responsif */
 
 @media (max-width: 1100px) {
   .statsGrid {

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import {
@@ -61,7 +60,6 @@ export default function Register() {
                 password: form.password,
             });
 
-            // Setelah daftar, pasien diarahkan ke halaman login.
             navigate("/login", {
                 replace: true,
                 state: { registered: true },

@@ -437,7 +437,6 @@ function AdminDashboard() {
                 </div>
             </section>
 
-            {/* MODAL DETAIL PASIEN */}
             {selectedAppointment && (
                 <div
                     className={styles.modalOverlay}
@@ -606,7 +605,6 @@ function AdminDashboard() {
                 </div>
             )}
 
-            {/* MODAL TAMBAH DAN EDIT */}
             {(isCreating || editingAppointment) && (
                 <div
                     className={styles.modalOverlay}
