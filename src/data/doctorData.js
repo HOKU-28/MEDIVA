@@ -1,3 +1,10 @@
+import doctorSarahWijaya from "../assets/profiles/doctor-sarah-wijaya.jpg";
+import doctorAndiPratama from "../assets/profiles/doctor-andi-pratama.jpg";
+import doctorMayaPutri from "../assets/profiles/doctor-maya-putri.webp";
+import doctorRinaLestari from "../assets/profiles/doctor-rina-lestari.jpg";
+import doctorBudiSantoso from "../assets/profiles/doctor-budi-santoso.jpg";
+import doctorKevinWijaya from "../assets/profiles/doctor-kevin-wijaya.jpg";
+
 function toISO(offset = 0) {
   const d = new Date();
   d.setDate(d.getDate() + offset);
@@ -30,6 +37,7 @@ export const initialDoctor = {
   id: 1,
   name: "Dr. Sarah Wijaya",
   initials: "SW",
+  image: doctorSarahWijaya,
   specialty: "Dokter Umum",
   strNumber: "STR-3174-0001-2018",
   education: "Universitas Indonesia",
@@ -132,3 +140,106 @@ export const initialAppointments = [
     patient: { id: 5, name: "Hendra Gunawan", age: 46, gender: "Laki-laki", phone: "0856-9999-0000", bloodType: "O", allergy: "Tidak ada" },
   },
 ];
+
+export const doctorsList = [
+  {
+    id: 1,
+    name: "Dr. Sarah Wijaya",
+    initials: "SW",
+    image: doctorSarahWijaya,
+    specialty: "Dokter Umum",
+    rating: "4.9",
+    experience: "8 tahun pengalaman",
+    education: "Universitas Indonesia",
+    location: "MEDIVA Clinic Jakarta",
+    description:
+      "Dokter umum yang berpengalaman dalam menangani berbagai keluhan kesehatan umum dan memberikan konsultasi kesehatan.",
+    schedule: "Senin - Jumat, 09.00 - 15.00",
+    strNumber: "STR-3174-0001-2018",
+  },
+  {
+    id: 2,
+    name: "Dr. Andi Pratama",
+    initials: "AP",
+    image: doctorAndiPratama,
+    specialty: "Dokter Gigi",
+    rating: "4.8",
+    experience: "6 tahun pengalaman",
+    education: "Universitas Gadjah Mada",
+    location: "MEDIVA Clinic Jakarta",
+    description:
+      "Dokter gigi yang fokus pada perawatan dan konsultasi kesehatan gigi untuk pasien dewasa maupun anak.",
+    schedule: "Senin - Sabtu, 10.00 - 16.00",
+  },
+  {
+    id: 3,
+    name: "Dr. Maya Putri",
+    initials: "MP",
+    image: doctorMayaPutri,
+    specialty: "Dokter Anak",
+    rating: "4.9",
+    experience: "10 tahun pengalaman",
+    education: "Universitas Airlangga",
+    location: "MEDIVA Clinic Jakarta",
+    description:
+      "Dokter anak yang membantu memantau kesehatan, pertumbuhan, dan perkembangan anak.",
+    schedule: "Senin - Jumat, 08.00 - 14.00",
+  },
+  {
+    id: 4,
+    name: "Dr. Rina Lestari",
+    initials: "RL",
+    image: doctorRinaLestari,
+    specialty: "Dokter Kulit",
+    rating: "4.8",
+    experience: "7 tahun pengalaman",
+    education: "Universitas Padjadjaran",
+    location: "MEDIVA Clinic Jakarta",
+    description:
+      "Dokter spesialis kulit yang memberikan konsultasi dan perawatan berbagai masalah kulit.",
+    schedule: "Selasa - Sabtu, 10.00 - 16.00",
+  },
+  {
+    id: 5,
+    name: "Dr. Budi Santoso",
+    initials: "BS",
+    image: doctorBudiSantoso,
+    specialty: "Dokter Mata",
+    rating: "4.7",
+    experience: "9 tahun pengalaman",
+    education: "Universitas Diponegoro",
+    location: "MEDIVA Clinic Jakarta",
+    description:
+      "Dokter mata yang memberikan pemeriksaan dan konsultasi mengenai kesehatan mata.",
+    schedule: "Senin - Jumat, 09.00 - 15.00",
+  },
+  {
+    id: 6,
+    name: "Dr. Kevin Wijaya",
+    initials: "KW",
+    image: doctorKevinWijaya,
+    specialty: "Dokter Umum",
+    rating: "4.8",
+    experience: "5 tahun pengalaman",
+    education: "Universitas Brawijaya",
+    location: "MEDIVA Clinic Jakarta",
+    description:
+      "Dokter umum yang melayani konsultasi kesehatan dan pemeriksaan kondisi kesehatan umum.",
+    schedule: "Senin - Sabtu, 09.00 - 15.00",
+  },
+];
+
+export const doctorSpecialties = [
+  "Semua Spesialisasi",
+  "Dokter Umum",
+  "Dokter Gigi",
+  "Dokter Anak",
+  "Dokter Kulit",
+  "Dokter Mata",
+];
+
+export function getDoctorById(id) {
+  if (!id) return null;
+  return doctorsList.find((d) => d.id === Number(id)) || null;
+}
+

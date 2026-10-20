@@ -93,8 +93,12 @@ function DoctorProfile() {
         </div>
 
         <div className={styles.card} style={{ textAlign: "center" }}>
-          <div className={styles.statIcon} style={{ width: 84, height: 84, margin: "0 auto 14px", borderRadius: "9999px", background: "var(--color-primary)", color: "#fff", fontSize: "1.6rem", fontWeight: 700 }}>
-            {doctor.initials}
+          <div className={styles.statIcon} style={{ width: 84, height: 84, margin: "0 auto 14px", borderRadius: "9999px", background: "var(--color-primary)", color: "#fff", fontSize: "1.6rem", fontWeight: 700, overflow: "hidden" }}>
+            {doctor.image ? (
+              <img src={doctor.image} alt={doctor.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            ) : (
+              doctor.initials
+            )}
           </div>
           <h2 style={{ marginBottom: 4 }}>{doctor.name}</h2>
           <p style={{ margin: "0 0 12px" }}>{doctor.specialty}</p>

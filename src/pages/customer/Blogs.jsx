@@ -89,7 +89,17 @@ export default function Blogs() {
 
       {showFeaturedHero && (
         <section className={styles.featuredCard} aria-label="Artikel Pilihan">
-          <div>
+          {featuredBlog.image?.src && (
+            <div className={styles.featuredImageWrap}>
+              <img
+                src={featuredBlog.image.src}
+                alt={featuredBlog.image.alt || featuredBlog.title}
+                className={styles.featuredImage}
+                loading="eager"
+              />
+            </div>
+          )}
+          <div className={styles.featuredContent}>
             <div className={styles.featuredTop}>
               <span className={styles.featuredTag}>
                 <Sparkles size={13} aria-hidden="true" /> Pilihan Redaksi
@@ -104,18 +114,18 @@ export default function Blogs() {
 
             <h2>{featuredBlog.title}</h2>
             <p>{featuredBlog.summary}</p>
-          </div>
 
-          <div className={styles.featuredFooter}>
-            <span className={styles.featuredMeta}>
-              {featuredBlog.author} • {featuredBlog.date}
-            </span>
-            <Link
-              to={`/blogs/${featuredBlog.slug}`}
-              className={styles.featuredBtn}
-            >
-              Baca Artikel Lengkap <ArrowRight size={16} aria-hidden="true" />
-            </Link>
+            <div className={styles.featuredFooter}>
+              <span className={styles.featuredMeta}>
+                {featuredBlog.author} • {featuredBlog.date}
+              </span>
+              <Link
+                to={`/blogs/${featuredBlog.slug}`}
+                className={styles.featuredBtn}
+              >
+                Baca Artikel Lengkap <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </div>
           </div>
         </section>
       )}
@@ -137,7 +147,17 @@ export default function Blogs() {
                 to={`/blogs/${article.slug}`}
                 className={styles.card}
               >
-                <div>
+                {article.image?.src && (
+                  <div className={styles.cardImageWrap}>
+                    <img
+                      src={article.image.src}
+                      alt={article.image.alt || article.title}
+                      className={styles.cardImage}
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div className={styles.cardContent}>
                   <div className={styles.cardTop}>
                     <span className={styles.categoryTag}>
                       {article.category}

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { MessageCircle, Clock, ChevronRight } from "lucide-react";
+import { getDoctorById } from "../../data/doctorData";
 import styles from "./Consultation.module.css";
 
 const ongoingConsultations = [
@@ -82,7 +83,13 @@ function Consultation() {
                 to={`/konsultasi/${chat.id}`}
                 className={styles.chatCard}
               >
-                <div className={styles.avatar}>{chat.initials}</div>
+                <div className={styles.avatar}>
+                  {getDoctorById(chat.doctorId)?.image ? (
+                    <img src={getDoctorById(chat.doctorId).image} alt={chat.doctorName} className={styles.avatarImg} />
+                  ) : (
+                    chat.initials
+                  )}
+                </div>
                 <div className={styles.chatInfo}>
                   <div className={styles.chatTop}>
                     <strong>{chat.doctorName}</strong>
@@ -120,7 +127,13 @@ function Consultation() {
         <div className={styles.doctorGrid}>
           {recommendedDoctors.map((doc) => (
             <div key={doc.id} className={styles.doctorCard}>
-              <div className={styles.doctorAvatar}>{doc.initials}</div>
+              <div className={styles.doctorAvatar}>
+                {getDoctorById(doc.id)?.image ? (
+                  <img src={getDoctorById(doc.id).image} alt={doc.name} className={styles.avatarImg} />
+                ) : (
+                  doc.initials
+                )}
+              </div>
               <div className={styles.doctorInfo}>
                 <strong>{doc.name}</strong>
                 <span>{doc.specialty}</span>

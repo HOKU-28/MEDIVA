@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { MessageCircle, Calendar, CheckCircle, Trash2, X } from "lucide-react";
+import { getDoctorById } from "../../data/doctorData";
 import styles from "./History.module.css";
 
 const TABS = ["Berlangsung", "Terjadwal", "Selesai"];
@@ -74,7 +75,6 @@ function History() {
   useEffect(() => {
     const load = () => {
       const stored = JSON.parse(localStorage.getItem("riwayat") || "[]");
-      console.log("[History] loaded dari localStorage:", stored);
       setOngoing(stored);
 
       const storedScheduled = JSON.parse(
@@ -144,7 +144,13 @@ function History() {
       return ongoing.map((item) => (
         <div key={item.id} className={styles.card}>
           <div className={styles.cardLeft}>
-            <div className={styles.avatar}>{item.initials}</div>
+            <div className={styles.avatar}>
+              {getDoctorById(item.doctorId)?.image ? (
+                <img src={getDoctorById(item.doctorId).image} alt={item.doctorName} className={styles.avatarImg} />
+              ) : (
+                item.initials
+              )}
+            </div>
             <div>
               <strong>{item.doctorName}</strong>
               <span className={styles.specialty}>{item.specialty}</span>
@@ -186,7 +192,13 @@ function History() {
       return scheduled.map((item) => (
         <div key={item.id} className={styles.card}>
           <div className={styles.cardLeft}>
-            <div className={styles.avatar}>{item.initials}</div>
+            <div className={styles.avatar}>
+              {getDoctorById(item.doctorId)?.image ? (
+                <img src={getDoctorById(item.doctorId).image} alt={item.doctorName} className={styles.avatarImg} />
+              ) : (
+                item.initials
+              )}
+            </div>
             <div>
               <strong>{item.doctorName}</strong>
               <span className={styles.specialty}>{item.specialty}</span>
@@ -230,7 +242,13 @@ function History() {
       return done.map((item) => (
         <div key={item.id} className={styles.card}>
           <div className={styles.cardLeft}>
-            <div className={styles.avatar}>{item.initials}</div>
+            <div className={styles.avatar}>
+              {getDoctorById(item.doctorId)?.image ? (
+                <img src={getDoctorById(item.doctorId).image} alt={item.doctorName} className={styles.avatarImg} />
+              ) : (
+                item.initials
+              )}
+            </div>
             <div>
               <strong>{item.doctorName}</strong>
               <span className={styles.specialty}>{item.specialty}</span>

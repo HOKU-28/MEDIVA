@@ -1,57 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { TriangleAlert, CheckCircle } from "lucide-react";
+import { doctorsList } from "../../data/doctorData";
 import styles from "./Booking.module.css";
-
-const doctors = [
-  {
-    id: 1,
-    name: "Dr. Sarah Wijaya",
-    initials: "SW",
-    specialty: "Dokter Umum",
-    experience: "8 tahun pengalaman",
-    schedule: "Senin - Jumat, 09.00 - 15.00",
-  },
-  {
-    id: 2,
-    name: "Dr. Andi Pratama",
-    initials: "AP",
-    specialty: "Dokter Gigi",
-    experience: "6 tahun pengalaman",
-    schedule: "Senin - Sabtu, 10.00 - 16.00",
-  },
-  {
-    id: 3,
-    name: "Dr. Maya Putri",
-    initials: "MP",
-    specialty: "Dokter Anak",
-    experience: "10 tahun pengalaman",
-    schedule: "Senin - Jumat, 08.00 - 14.00",
-  },
-  {
-    id: 4,
-    name: "Dr. Rina Lestari",
-    initials: "RL",
-    specialty: "Dokter Kulit",
-    experience: "7 tahun pengalaman",
-    schedule: "Selasa - Sabtu, 10.00 - 16.00",
-  },
-  {
-    id: 5,
-    name: "Dr. Budi Santoso",
-    initials: "BS",
-    specialty: "Dokter Mata",
-    experience: "9 tahun pengalaman",
-    schedule: "Senin - Jumat, 09.00 - 15.00",
-  },
-  {
-    id: 6,
-    name: "Dr. Kevin Wijaya",
-    initials: "KW",
-    specialty: "Dokter Umum",
-    experience: "5 tahun pengalaman",
-    schedule: "Senin - Sabtu, 09.00 - 15.00",
-  },
-];
 
 const timeSlots = ["09.00", "10.00", "11.00", "13.00", "14.00"];
 
@@ -67,7 +18,7 @@ function Booking() {
     window.scrollTo(0, 0);
   }, []);
 
-  const doctor = doctors.find((doctor) => doctor.id === Number(id));
+  const doctor = doctorsList.find((doc) => doc.id === Number(id));
 
   if (!doctor) {
     return (
@@ -134,7 +85,9 @@ function Booking() {
     return (
       <main className={styles.page}>
         <section className={styles.success}>
-          <div className={styles.successIcon}>✓</div>
+          <div className={styles.successIcon}>
+            <CheckCircle size={32} />
+          </div>
 
           <span className={styles.label}>JANJI BERHASIL DIBUAT</span>
 
@@ -158,7 +111,7 @@ function Booking() {
 
             <div>
               <span>Waktu</span>
-              <strong>{time}</strong>
+              <strong>{time} WIB</strong>
             </div>
           </div>
 
@@ -167,15 +120,14 @@ function Booking() {
               to={`/konsultasi/${doctor.id}`}
               className={styles.chatButton}
             >
-              💬 Mulai Konsultasi
+              Mulai Konsultasi
             </Link>
 
             <Link
               to="/riwayat"
-              className={styles.chatButton}
-              style={{ background: "#0d9488" }}
+              className={styles.historyButton}
             >
-              📋 Lihat di Riwayat
+              Lihat di Riwayat
             </Link>
 
             <Link to="/dokter" className={styles.backButton}>
@@ -189,13 +141,28 @@ function Booking() {
 
   return (
     <main className={styles.page}>
-      <Link to={`/dokter/${doctor.id}`} className={styles.back}>
-        ← Kembali ke Profil Dokter
-      </Link>
+      <div className={styles.headerArea}>
+        <Link to={`/dokter/${doctor.id}`} className={styles.back}>
+          ← Kembali ke Profil Dokter
+        </Link>
+
+        <div className={styles.emergencyAdvisory}>
+          <TriangleAlert size={18} className={styles.emergencyIcon} />
+          <div>
+            <strong>Peringatan Medis Darurat:</strong> Layanan booking ini ditujukan untuk konsultasi terjadwal non-darurat. Jika Anda mengalami kondisi gawat darurat medis, segera hubungi 119 atau kunjungi IGD terdekat.
+          </div>
+        </div>
+      </div>
 
       <section className={styles.bookingLayout}>
         <aside className={styles.doctorCard}>
-          <div className={styles.avatar}>{doctor.initials}</div>
+          <div className={styles.avatar}>
+            {doctor.image ? (
+              <img src={doctor.image} alt={doctor.name} className={styles.avatarImg} />
+            ) : (
+              doctor.initials
+            )}
+          </div>
 
           <span className={styles.specialty}>{doctor.specialty}</span>
 

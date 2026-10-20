@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import {
-    HeartPulse,
     UserRound,
     Mail,
     Lock,
@@ -9,6 +8,7 @@ import {
     ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "../../Context/AuthContext";
+import medivaLogo from "../../assets/branding/mediva-logo.png";
 import styles from "./Auth.module.css";
 
 export default function Register() {
@@ -72,11 +72,8 @@ export default function Register() {
     return (
         <main className={styles.authPage}>
             <section className={styles.authCard}>
-                <Link to="/" className={styles.brand}>
-                    <span className={styles.brandIcon}>
-                        <HeartPulse size={25} />
-                    </span>
-                    <span>MEDIVA</span>
+                <Link to="/" className={styles.brand} aria-label="MEDIVA Beranda">
+                    <img src={medivaLogo} alt="MEDIVA" className={styles.brandLogo} />
                 </Link>
 
                 <div className={styles.heading}>

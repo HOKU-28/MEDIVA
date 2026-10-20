@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { Stethoscope, Smile, Baby, Star, Clock, ShieldCheck } from "lucide-react";
+import { doctorsList } from "../../data/doctorData";
+import { useAuth } from "../../Context/AuthContext";
 import styles from "./Home.module.css";
-import { Stethoscope, Smile, Baby, Star } from "lucide-react";
 
 const services = [
   {
@@ -20,34 +22,17 @@ const services = [
   },
 ];
 
-const featuredDoctors = [
-  {
-    id: 1,
-    name: "Dr. Sarah Wijaya",
-    initials: "SW",
-    specialty: "Dokter Umum",
-    rating: "4.9",
-    experience: "8 tahun pengalaman",
-  },
-  {
-    id: 2,
-    name: "Dr. Andi Pratama",
-    initials: "AP",
-    specialty: "Dokter Gigi",
-    rating: "4.8",
-    experience: "6 tahun pengalaman",
-  },
-  {
-    id: 3,
-    name: "Dr. Maya Putri",
-    initials: "MP",
-    specialty: "Dokter Anak",
-    rating: "4.9",
-    experience: "10 tahun pengalaman",
-  },
-];
-
 function Home() {
+  const { user } = useAuth();
+  const featuredDoctors = doctorsList.slice(0, 3);
+
+  const historyLink =
+    user?.role === "doctor"
+      ? "/doctor/appointment"
+      : user?.role === "admin"
+      ? "/admin"
+      : "/riwayat";
+
   return (
     <main className={styles.home}>
       <section className={styles.hero}>
@@ -66,20 +51,50 @@ function Home() {
             konsultasi dengan mudah melalui MEDIVA.
           </p>
 
-          <Link to="/dokter" className={styles.primaryButton}>
-            Cari Dokter
-          </Link>
+          <div className={styles.heroActions}>
+            <Link to="/dokter" className={styles.primaryButton}>
+              Cari Dokter
+            </Link>
+            <Link to={historyLink} className={styles.secondaryButton}>
+              Lihat Riwayat
+            </Link>
+          </div>
         </div>
 
         <div className={styles.heroVisual}>
-          <div className={styles.heroCard}>
-            <span className={styles.heroCardIcon}>
-              <Stethoscope size={24} aria-hidden="true" />
-            </span>
+          <div className={styles.clinicCard}>
+            <div className={styles.liveBadge}>
+              <span className={styles.liveDot} />
+              <span>Praktik Klinik Aktif Hari Ini</span>
+            </div>
 
-            <div>
-              <strong>MEDIVA</strong>
-              <p>Healthcare made simple.</p>
+            <div className={styles.clinicHeader}>
+              <div className={styles.clinicIcon}>
+                <Stethoscope size={24} aria-hidden="true" />
+              </div>
+              <div>
+                <strong>Klinik Utama MEDIVA</strong>
+                <p>Jakarta Selatan</p>
+              </div>
+            </div>
+
+            <div className={styles.clinicMeta}>
+              <div className={styles.metaRow}>
+                <Clock size={16} aria-hidden="true" />
+                <span>Senin - Jumat, 09.00 - 15.00 WIB</span>
+              </div>
+              <div className={styles.metaRow}>
+                <ShieldCheck size={16} aria-hidden="true" />
+                <span>{doctorsList.length} Dokter Spesialis Terdaftar</span>
+              </div>
+            </div>
+
+            <div className={styles.clinicFooter}>
+              <div className={styles.ratingInfo}>
+                <Star size={16} fill="currentColor" aria-hidden="true" />
+                <strong>4.9</strong>
+                <span>Kepuasan Pasien</span>
+              </div>
             </div>
           </div>
         </div>
@@ -141,7 +156,11 @@ function Home() {
               key={doctor.id}
             >
               <div className={styles.doctorAvatar}>
-                {doctor.initials}
+                {doctor.image ? (
+                  <img src={doctor.image} alt={doctor.name} className={styles.avatarImg} />
+                ) : (
+                  doctor.initials
+                )}
               </div>
 
               <div className={styles.doctorInfo}>
