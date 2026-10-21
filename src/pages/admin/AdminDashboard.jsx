@@ -12,7 +12,6 @@ import {
     AlertCircle,
     Plus,
     Search,
-    Phone,
     HeartPulse,
     FileText,
 } from "lucide-react";

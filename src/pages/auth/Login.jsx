@@ -5,9 +5,36 @@ import {
     useLocation,
     useNavigate,
 } from "react-router-dom";
-import { HeartPulse, Mail, Lock, AlertCircle } from "lucide-react";
+import { Mail, Lock, AlertCircle } from "lucide-react";
 import { useAuth } from "../../Context/AuthContext";
+import medivaLogo from "../../assets/branding/mediva-logo.png";
+import adminAvatar from "../../assets/profiles/admin-rinaldy.jpg";
+import doctorAvatar from "../../assets/profiles/doctor-sarah-wijaya.jpg";
 import styles from "./Auth.module.css";
+
+const demoAccounts = [
+    {
+        role: "Pasien",
+        name: "Andi Pratama",
+        email: "andi.pratama@mediva.test",
+        password: "Customer123!",
+        initials: "AP",
+    },
+    {
+        role: "Dokter",
+        name: "Dr. Sarah Wijaya",
+        email: "doctor@mediva.test",
+        password: "Doctor123!",
+        avatar: doctorAvatar,
+    },
+    {
+        role: "Admin",
+        name: "Rinaldy",
+        email: "admin@mediva.test",
+        password: "Admin123!",
+        avatar: adminAvatar,
+    },
+];
 
 function getHomeByRole(role) {
     const routes = {
@@ -83,11 +110,8 @@ export default function Login() {
     return (
         <main className={styles.authPage}>
             <section className={styles.authCard}>
-                <Link to="/" className={styles.brand}>
-                    <span className={styles.brandIcon}>
-                        <HeartPulse size={25} />
-                    </span>
-                    <span>MEDIVA</span>
+                <Link to="/" className={styles.brand} aria-label="MEDIVA Beranda">
+                    <img src={medivaLogo} alt="MEDIVA" className={styles.brandLogo} />
                 </Link>
 
                 <div className={styles.heading}>
@@ -160,10 +184,32 @@ export default function Login() {
                 </p>
 
                 <div className={styles.demoNotice}>
-                    <strong>Akun demo development</strong>
-                    <span>Pasien: andi.pratama@mediva.test / Customer123!</span>
-                    <span>Dokter: doctor@mediva.test / Doctor123!</span>
-                    <span>Admin: admin@mediva.test / Admin123!</span>
+                    <strong className={styles.demoTitle}>Akun demo development</strong>
+                    <div className={styles.demoList}>
+                        {demoAccounts.map((account) => (
+                            <div key={account.role} className={styles.demoRow}>
+                                {account.avatar ? (
+                                    <img
+                                        src={account.avatar}
+                                        alt={account.name}
+                                        className={styles.demoAvatar}
+                                    />
+                                ) : (
+                                    <div
+                                        className={styles.demoAvatarInitials}
+                                        aria-label={account.name}
+                                    >
+                                        {account.initials}
+                                    </div>
+                                )}
+                                <div className={styles.demoInfo}>
+                                    <span className={styles.demoRole}>{account.role}</span>
+                                    <span className={styles.demoEmail}>{account.email}</span>
+                                    <span className={styles.demoPassword}>{account.password}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
         </main>

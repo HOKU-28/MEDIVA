@@ -1,16 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Send, ArrowLeft, CheckCircle, Sparkles } from "lucide-react";
+import { Send, ArrowLeft, CheckCircle, Sparkles, TriangleAlert } from "lucide-react";
+import { doctorsList } from "../../data/doctorData";
 import styles from "./Chat.module.css";
-
-const doctors = [
-  { id: 1, name: "Dr. Sarah Wijaya", initials: "SW", specialty: "Dokter Umum", experience: "8 tahun" },
-  { id: 2, name: "Dr. Andi Pratama", initials: "AP", specialty: "Dokter Gigi", experience: "6 tahun" },
-  { id: 3, name: "Dr. Maya Putri", initials: "MP", specialty: "Dokter Anak", experience: "10 tahun" },
-  { id: 4, name: "Dr. Rina Lestari", initials: "RL", specialty: "Dokter Kulit", experience: "7 tahun" },
-  { id: 5, name: "Dr. Budi Santoso", initials: "BS", specialty: "Dokter Mata", experience: "9 tahun" },
-  { id: 6, name: "Dr. Kevin Wijaya", initials: "KW", specialty: "Dokter Umum", experience: "5 tahun" },
-];
 
 const specialtyOptions = {
   "Dokter Umum": [
@@ -86,7 +78,7 @@ function readStorageList(key, fallback = []) {
   }
 }
 
-function generateDoctorReply(text, doctor, stage) {
+function generateDoctorReply(text, _doctor, _stage) {
   const lower = text.toLowerCase();
 
   if (lower.includes("terima kasih") || lower.includes("makasih")) {
@@ -141,12 +133,12 @@ function Chat() {
   const { doctorId } = useParams();
   const navigate = useNavigate();
   const id = Number(doctorId);
-  const doctor = doctors.find((d) => d.id === id);
+  const doctor = doctorsList.find((d) => d.id === id);
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [chatStage, setChatStage] = useState(0); // 0: keluhan, 1: durasi, 2: obat, 3: saran, 4: selesai
+  const [chatStage, setChatStage] = useState(0);
   const [showEndModal, setShowEndModal] = useState(false);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
@@ -189,7 +181,7 @@ function Chat() {
     }, 450);
 
     return () => clearTimeout(timer);
-  }, [id]);
+  }, [id, doctor]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -345,7 +337,13 @@ function Chat() {
         </button>
 
         <div className={styles.doctorInfo}>
-          <div className={styles.avatar}>{doctor.initials}</div>
+          <div className={styles.avatar}>
+            {doctor.image ? (
+              <img src={doctor.image} alt={doctor.name} className={styles.avatarImg} />
+            ) : (
+              doctor.initials
+            )}
+          </div>
           <div>
             <strong>{doctor.name}</strong>
             <span>{doctor.specialty}</span>
@@ -355,7 +353,7 @@ function Chat() {
         <div className={styles.headerActions}>
           <div className={styles.onlineWrap}>
             <div className={styles.statusDot} />
-            <span className={styles.statusText}>Online</span>
+            <span className={styles.statusText}>Aktif</span>
           </div>
           <button
             type="button"
@@ -368,8 +366,15 @@ function Chat() {
       </header>
 
       <div className={styles.statusBar}>
-        <span className={styles.statusBadge}>● Konsultasi Sedang Berlangsung</span>
-        <span className={styles.aiActiveBadge}>💬 Chat Dokter Aktif</span>
+        <span className={styles.statusBadge}>● Sesi Panduan Awal</span>
+        <span className={styles.aiActiveBadge}>Simulasi Konsultasi</span>
+      </div>
+
+      <div className={styles.advisoryBanner}>
+        <TriangleAlert size={16} className={styles.advisoryIcon} />
+        <p>
+          <strong>Panduan Medis Awal:</strong> Percakapan ini merupakan simulasi panduan klinis awal dan bukan pengganti diagnosis resmi dari dokter. Bila mengalami kondisi darurat medis, segera hubungi 119 atau kunjungi IGD terdekat.
+        </p>
       </div>
 
       <div className={styles.messages}>
@@ -385,7 +390,7 @@ function Chat() {
               <p>{msg.text}</p>
               <div className={styles.msgFooter}>
                 {msg.from === "doctor" && (
-                  <span className={styles.aiTag}>💬 Dokter</span>
+                  <span className={styles.aiTag}>Panduan Medis</span>
                 )}
                 <span className={styles.msgTime}>{msg.time}</span>
               </div>
@@ -463,9 +468,9 @@ function Chat() {
             </div>
             <h3>Akhiri Konsultasi?</h3>
             <p>
-              Apakah Anda yakin ingin mengakhiri sesi percakapan dengan{" "}
-              <strong>{doctor.name}</strong>? Konsultasi ini akan dipindahkan
-              ke tab <strong>Selesai</strong>.
+              Apakah Anda yakin ingin menyelesaikan sesi panduan awal dengan{" "}
+              <strong>{doctor.name}</strong>? Ringkasan sesi ini akan dipindahkan
+              ke tab <strong>Selesai</strong> di riwayat Anda.
             </p>
             <div className={styles.modalActions}>
               <button

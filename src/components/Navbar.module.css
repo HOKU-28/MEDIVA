@@ -1,9 +1,9 @@
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 10;
-  border-bottom: 1px solid #e2e8f0;
-  background: #ffffff;
+  z-index: 50;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 
 .container {
@@ -14,14 +14,22 @@
   height: 72px;
   margin: 0 auto;
   padding: 0 8%;
+  gap: 20px;
 }
 
 .logo {
-  color: #1677a8;
-  font-size: 21px;
-  font-weight: 800;
-  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
   text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logoImage {
+  height: 64px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+  display: block;
 }
 
 .nav {
@@ -34,7 +42,7 @@
 .activeLink {
   position: relative;
   padding: 26px 0;
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
@@ -42,11 +50,11 @@
 }
 
 .link:hover {
-  color: #1677a8;
+  color: var(--color-primary);
 }
 
 .activeLink {
-  color: #1677a8;
+  color: var(--color-primary);
   font-weight: 600;
 }
 
@@ -57,28 +65,162 @@
   left: 0;
   height: 2px;
   border-radius: 2px;
-  background: #1677a8;
+  background: var(--color-primary);
   content: "";
 }
 
-@media (max-width: 600px) {
+.desktopAccount {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.mobileAccount {
+  display: none;
+}
+
+.menuToggle {
+  display: none;
+  background: none;
+  border: none;
+  padding: 8px;
+  color: var(--color-text-body);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.userPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.userPill:hover {
+  background: #dbeff8;
+}
+
+.userAvatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.userName {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.loginButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.loginButton:hover {
+  background: var(--color-primary-hover);
+}
+
+@media (max-width: 1024px) {
+  .logoImage {
+    height: 58px;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 860px) {
+  .nav {
+    gap: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .logoImage {
+    height: 48px;
+    max-width: 160px;
+  }
+
   .container {
-    height: auto;
-    min-height: 64px;
+    height: 64px;
     padding: 0 5%;
   }
 
+  .desktopAccount {
+    display: none;
+  }
+
+  .menuToggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .nav {
-    gap: 14px;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: 16px 5% 24px;
+    gap: 0;
+    box-shadow: var(--shadow-hover);
+  }
+
+  .navOpen {
+    display: flex;
   }
 
   .link,
   .activeLink {
-    padding: 22px 0;
-    font-size: 12px;
+    padding: 14px 0;
+    font-size: 15px;
+    border-bottom: 1px solid var(--color-border-subtle);
   }
 
   .activeLink::after {
-    bottom: 14px;
+    display: none;
+  }
+
+  .mobileAccount {
+    display: block;
+    margin-top: 16px;
+    padding-top: 8px;
+  }
+
+  .userPill {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .loginButton {
+    width: 100%;
+    padding: 12px;
   }
 }

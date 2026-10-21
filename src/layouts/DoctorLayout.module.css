@@ -19,21 +19,36 @@
 
 .brand {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 12px;
   padding: 0 8px;
 }
 
+.brandSymbol {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
 .logo {
-  color: var(--color-primary);
-  font-size: 21px;
+  color: var(--color-text-title);
+  font-size: 20px;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
+  line-height: 1.15;
 }
 
 .badge {
   align-self: flex-start;
-  padding: 3px 10px;
+  padding: 2px 8px;
   border-radius: var(--radius-full);
   background: var(--color-primary-light);
   color: var(--color-primary);
@@ -70,9 +85,17 @@
   height: 42px;
   border-radius: var(--radius-full);
   background: var(--color-primary);
-  color: #fff;
+  color: #ffffff;
   font-size: 0.9rem;
   font-weight: 700;
+  overflow: hidden;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .nav {
@@ -112,9 +135,9 @@
   margin-top: auto;
   padding: 10px 14px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: transparent;
-  color: #dc2626;
+  color: var(--color-error);
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: 500;
@@ -128,7 +151,7 @@
 }
 
 .exit:hover {
-  background-color: #fef2f2;
+  background-color: var(--color-error-bg);
   color: #b91c1c;
 }
 
@@ -137,7 +160,7 @@
 }
 
 .exit:focus-visible {
-  outline: 2px solid #dc2626;
+  outline: 2px solid var(--color-error);
   outline-offset: 2px;
 }
 

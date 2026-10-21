@@ -1,67 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Star } from "lucide-react";
+import { Star, Search, X } from "lucide-react";
+import { doctorsList, doctorSpecialties } from "../../data/doctorData";
 import styles from "./DoctorList.module.css";
-
-const doctors = [
-  {
-    id: 1,
-    name: "Dr. Sarah Wijaya",
-    initials: "SW",
-    specialty: "Dokter Umum",
-    rating: "4.9",
-    experience: "8 tahun pengalaman",
-  },
-  {
-    id: 2,
-    name: "Dr. Andi Pratama",
-    initials: "AP",
-    specialty: "Dokter Gigi",
-    rating: "4.8",
-    experience: "6 tahun pengalaman",
-  },
-  {
-    id: 3,
-    name: "Dr. Maya Putri",
-    initials: "MP",
-    specialty: "Dokter Anak",
-    rating: "4.9",
-    experience: "10 tahun pengalaman",
-  },
-  {
-    id: 4,
-    name: "Dr. Rina Lestari",
-    initials: "RL",
-    specialty: "Dokter Kulit",
-    rating: "4.8",
-    experience: "7 tahun pengalaman",
-  },
-  {
-    id: 5,
-    name: "Dr. Budi Santoso",
-    initials: "BS",
-    specialty: "Dokter Mata",
-    rating: "4.7",
-    experience: "9 tahun pengalaman",
-  },
-  {
-    id: 6,
-    name: "Dr. Kevin Wijaya",
-    initials: "KW",
-    specialty: "Dokter Umum",
-    rating: "4.8",
-    experience: "5 tahun pengalaman",
-  },
-];
-
-const specialties = [
-  "Semua Spesialisasi",
-  "Dokter Umum",
-  "Dokter Gigi",
-  "Dokter Anak",
-  "Dokter Kulit",
-  "Dokter Mata",
-];
 
 function DoctorList() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -108,7 +49,7 @@ function DoctorList() {
     setSearchParams(searchParams, { replace: true });
   }
 
-  const filteredDoctors = doctors.filter((doctor) => {
+  const filteredDoctors = doctorsList.filter((doctor) => {
     const nameMatch = doctor.name
       .toLowerCase()
       .includes(search.toLowerCase());
@@ -129,20 +70,35 @@ function DoctorList() {
       </section>
 
       <section className={styles.filters}>
-        <input
-          type="text"
-          placeholder="Cari nama dokter..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className={styles.search}
-        />
+        <div className={styles.searchWrapper}>
+          <Search size={18} className={styles.searchIcon} aria-hidden="true" />
+          <input
+            type="text"
+            placeholder="Cari nama dokter..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className={styles.search}
+            aria-label="Cari nama dokter"
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className={styles.clearButton}
+              aria-label="Hapus pencarian"
+            >
+              <X size={16} aria-hidden="true" />
+            </button>
+          )}
+        </div>
 
         <select
           value={specialty}
           onChange={handleSpecialtyChange}
           className={styles.select}
+          aria-label="Pilih spesialisasi dokter"
         >
-          {specialties.map((item) => (
+          {doctorSpecialties.map((item) => (
             <option key={item} value={item}>
               {item}
             </option>
@@ -162,12 +118,19 @@ function DoctorList() {
               <article className={styles.card} key={doctor.id}>
                 <div className={styles.doctorTop}>
                   <div className={styles.avatar}>
-                    {doctor.initials}
+                    {doctor.image ? (
+                      <img src={doctor.image} alt={doctor.name} className={styles.avatarImg} />
+                    ) : (
+                      doctor.initials
+                    )}
                   </div>
 
                   <div>
                     <h3>{doctor.name}</h3>
-                    <p>{doctor.specialty}</p>
+                    <p className={styles.specialty}>{doctor.specialty}</p>
+                    {doctor.education && (
+                      <p className={styles.education}>{doctor.education}</p>
+                    )}
                   </div>
                 </div>
 

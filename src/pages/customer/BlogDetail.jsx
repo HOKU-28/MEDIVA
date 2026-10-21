@@ -8,6 +8,7 @@ import {
   Stethoscope,
   ArrowRight,
   BookOpen,
+  ChevronRight,
 } from "lucide-react";
 import { getBlogBySlug, getRelatedBlogs } from "../../data/blogsData";
 import styles from "./BlogDetail.module.css";
@@ -46,6 +47,26 @@ export default function BlogDetail() {
   return (
     <main className={styles.page}>
       <div className={styles.container}>
+        <nav aria-label="Breadcrumb" className={styles.breadcrumbs}>
+          <Link to="/" className={styles.breadcrumbLink}>
+            Home
+          </Link>
+          <ChevronRight
+            size={14}
+            className={styles.breadcrumbSep}
+            aria-hidden="true"
+          />
+          <Link to="/blogs" className={styles.breadcrumbLink}>
+            Blogs
+          </Link>
+          <ChevronRight
+            size={14}
+            className={styles.breadcrumbSep}
+            aria-hidden="true"
+          />
+          <span className={styles.breadcrumbCurrent}>{article.title}</span>
+        </nav>
+
         <Link
           to="/blogs"
           className={styles.backLink}
@@ -76,6 +97,23 @@ export default function BlogDetail() {
 
           <p className={styles.leadSummary}>{article.summary}</p>
 
+          {article.image?.src && (
+            <figure className={styles.featuredFigure}>
+              <img
+                src={article.image.src}
+                alt={article.image.alt || article.title}
+                className={styles.featuredImage}
+                loading="eager"
+                fetchPriority="high"
+              />
+              {article.image.caption && (
+                <figcaption className={styles.featuredCaption}>
+                  {article.image.caption}
+                </figcaption>
+              )}
+            </figure>
+          )}
+
           {article.takeaways && article.takeaways.length > 0 && (
             <section
               className={styles.takeawaysCard}
@@ -95,8 +133,23 @@ export default function BlogDetail() {
 
           <div className={styles.bodyContent}>
             {article.sections.map((section, idx) => (
-              <section key={idx}>
+              <section key={idx} className={styles.sectionBlock}>
                 <h2>{section.heading}</h2>
+                {section.image?.src && (
+                  <figure className={styles.inlineFigure}>
+                    <img
+                      src={section.image.src}
+                      alt={section.image.alt || section.heading}
+                      className={styles.inlineImage}
+                      loading="lazy"
+                    />
+                    {section.image.caption && (
+                      <figcaption className={styles.inlineCaption}>
+                        {section.image.caption}
+                      </figcaption>
+                    )}
+                  </figure>
+                )}
                 {section.paragraphs.map((para, pIdx) => (
                   <p key={pIdx}>{para}</p>
                 ))}
@@ -163,18 +216,27 @@ export default function BlogDetail() {
                   to={`/blogs/${rel.slug}`}
                   className={styles.relatedCard}
                 >
-                  <div>
+                  {rel.image?.src && (
+                    <div className={styles.relatedThumbWrap}>
+                      <img
+                        src={rel.image.src}
+                        alt={rel.image.alt || rel.title}
+                        className={styles.relatedThumb}
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <div className={styles.relatedCardBody}>
                     <span className={styles.relatedCategory}>
                       {rel.category}
                     </span>
                     <h3>{rel.title}</h3>
-                  </div>
-
-                  <div className={styles.relatedFooter}>
-                    <span>{rel.readTime}</span>
-                    <span className={styles.relatedLink}>
-                      Baca <ArrowRight size={13} aria-hidden="true" />
-                    </span>
+                    <div className={styles.relatedFooter}>
+                      <span>{rel.readTime}</span>
+                      <span className={styles.relatedLink}>
+                        Baca <ArrowRight size={13} aria-hidden="true" />
+                      </span>
+                    </div>
                   </div>
                 </Link>
               ))}

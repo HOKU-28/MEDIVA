@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./AdminDoctors.module.css";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Stethoscope } from "lucide-react";
 
 const initialDoctors = [
     {
@@ -271,7 +271,7 @@ function AdminDoctors() {
             <div className={styles.statsGrid}>
                 <div className={styles.statCard}>
                     <div className={`${styles.statIcon} ${styles.blue}`}>
-                        <span>👨‍⚕️</span>
+                        <Stethoscope size={24} />
                     </div>
                     <div>
                         <p className={styles.statLabel}>Total Dokter</p>

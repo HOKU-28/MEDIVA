@@ -14,6 +14,7 @@ import {
   initialLeaves,
   initialAppointments,
 } from "../data/doctorData";
+import medivaSymbol from "../assets/branding/mediva-symbol.png";
 import styles from "./DoctorLayout.module.css";
 
 const menu = [
@@ -58,12 +59,21 @@ function DoctorLayout() {
     <div className={styles.shell}>
       <aside className={styles.sidebar}>
         <div className={styles.brand}>
-          <span className={styles.logo}>MEDIVA</span>
-          <span className={styles.badge}>Dokter</span>
+          <img src={medivaSymbol} alt="MEDIVA" className={styles.brandSymbol} />
+          <div className={styles.brandText}>
+            <span className={styles.logo}>MEDIVA</span>
+            <span className={styles.badge}>Dokter</span>
+          </div>
         </div>
 
         <div className={styles.user}>
-          <div className={styles.avatar}>{doctor.initials}</div>
+          <div className={styles.avatar}>
+            {doctor.image ? (
+              <img src={doctor.image} alt={doctor.name} className={styles.avatarImg} />
+            ) : (
+              doctor.initials
+            )}
+          </div>
           <div>
             <strong>{doctor.name}</strong>
             <span>{doctor.specialty}</span>
