@@ -27,6 +27,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminDoctors from "./pages/admin/AdminDoctors";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminServices from "./pages/admin/AdminServices";
+import AdminProfile from "./pages/admin/AdminProfile";
 
 function CustomerShell() {
   return (
@@ -47,17 +48,13 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/dokter" element={<DoctorList />} />
               <Route path="/dokter/:id" element={<DoctorDetail />} />
-              <Route path="/booking/:id" element={<Booking />} />
-              <Route path="/riwayat" element={<History />} />
               <Route path="/blogs" element={<Blogs />} />
               <Route path="/blogs/:slug" element={<BlogDetail />} />
               <Route
-                element={
-                  <ProtectedRoute
-                    allowedRoles={["customer"]}
-                  />
-                }
+                element={<ProtectedRoute allowedRoles={["customer"]} />}
               >
+                <Route path="/booking/:id" element={<Booking />} />
+                <Route path="/riwayat" element={<History />} />
                 <Route path="/profil" element={<Profile />} />
               </Route>
             </Route>
@@ -65,7 +62,9 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            <Route path="/konsultasi/:doctorId" element={<Chat />} />
+            <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
+              <Route path="/konsultasi/:doctorId" element={<Chat />} />
+            </Route>
 
             <Route
               path="/doctor"
@@ -97,6 +96,7 @@ function App() {
                 <Route path="doctors" element={<AdminDoctors />} />
                 <Route path="users" element={<AdminUsers />} />
                 <Route path="services" element={<AdminServices />} />
+                <Route path="profil" element={<AdminProfile />} />
               </Route>
             </Route>
           </Routes>

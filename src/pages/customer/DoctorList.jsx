@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Star, Search, X } from "lucide-react";
-import { doctorsList, doctorSpecialties } from "../../data/doctorData";
+import {
+  doctorsList,
+  doctorSpecialties,
+  getSavedDoctorProfile,
+} from "../../data/doctorData";
 import styles from "./DoctorList.module.css";
 
 function DoctorList() {
@@ -49,7 +53,7 @@ function DoctorList() {
     setSearchParams(searchParams, { replace: true });
   }
 
-  const filteredDoctors = doctorsList.filter((doctor) => {
+  const filteredDoctors = doctorsList.map(getSavedDoctorProfile).filter((doctor) => {
     const nameMatch = doctor.name
       .toLowerCase()
       .includes(search.toLowerCase());

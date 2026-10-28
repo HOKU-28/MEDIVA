@@ -119,6 +119,28 @@
   color: #94a3b8;
 }
 
+.passwordVisibilityButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 6px;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.passwordVisibilityButton:hover {
+  color: var(--color-primary);
+}
+
+.passwordVisibilityButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 .submitButton {
   display: flex;
   align-items: center;

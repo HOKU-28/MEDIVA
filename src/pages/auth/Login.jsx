@@ -5,15 +5,16 @@ import {
     useLocation,
     useNavigate,
 } from "react-router-dom";
-import { Mail, Lock, AlertCircle } from "lucide-react";
+import { Mail, Lock, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../Context/AuthContext";
 import medivaLogo from "../../assets/branding/mediva-logo.png";
-import adminAvatar from "../../assets/profiles/admin-rinaldy.jpg";
+import adminAvatar from "../../assets/profiles/admin-default.jpg";
 import doctorAvatar from "../../assets/profiles/doctor-sarah-wijaya.jpg";
 import styles from "./Auth.module.css";
 
 const demoAccounts = [
     {
+        id: "demo-customer",
         role: "Pasien",
         name: "Andi Pratama",
         email: "andi.pratama@mediva.test",
@@ -21,6 +22,7 @@ const demoAccounts = [
         initials: "AP",
     },
     {
+        id: "demo-doctor",
         role: "Dokter",
         name: "Dr. Sarah Wijaya",
         email: "doctor@mediva.test",
@@ -28,6 +30,7 @@ const demoAccounts = [
         avatar: doctorAvatar,
     },
     {
+        id: "demo-admin",
         role: "Admin",
         name: "Rinaldy",
         email: "admin@mediva.test",
@@ -47,7 +50,7 @@ function getHomeByRole(role) {
 }
 
 export default function Login() {
-    const { user, login } = useAuth();
+    const { user, login, demoProfileImages } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -57,11 +60,19 @@ export default function Login() {
     });
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     if (user) {
+        const requestedPath = location.state?.from?.pathname;
+        const isCustomerPath =
+            user.role === "customer" &&
+            requestedPath &&
+            !requestedPath.startsWith("/doctor") &&
+            !requestedPath.startsWith("/admin");
+
         return (
             <Navigate
-                to={getHomeByRole(user.role)}
+                to={isCustomerPath ? requestedPath : getHomeByRole(user.role)}
                 replace
             />
         );
@@ -159,13 +170,21 @@ export default function Login() {
                             <input
                                 id="login-password"
                                 name="password"
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 placeholder="Masukkan password"
                                 value={form.password}
                                 onChange={handleChange}
                                 autoComplete="current-password"
                                 required
                             />
+                            <button
+                                type="button"
+                                className={styles.passwordVisibilityButton}
+                                onClick={() => setShowPassword((visible) => !visible)}
+                                aria-label={showPassword ? "Sembunyikan password" : "Lihat password"}
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
                         </div>
                     </div>
 
@@ -188,9 +207,9 @@ export default function Login() {
                     <div className={styles.demoList}>
                         {demoAccounts.map((account) => (
                             <div key={account.role} className={styles.demoRow}>
-                                {account.avatar ? (
+                                {demoProfileImages[account.id] || account.avatar ? (
                                     <img
-                                        src={account.avatar}
+                                        src={demoProfileImages[account.id] || account.avatar}
                                         alt={account.name}
                                         className={styles.demoAvatar}
                                     />

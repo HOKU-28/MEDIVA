@@ -1,14 +1,17 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 import {
   LayoutDashboard,
   Stethoscope,
   Users,
   FileText,
+  UserRound,
 } from "lucide-react";
 import styles from "./AdminLayout.module.css";
 import medivaSymbol from "../assets/branding/mediva-symbol.png";
-import adminAvatarImg from "../assets/profiles/admin-rinaldy.jpg";
+import adminAvatarImg from "../assets/profiles/admin-default.jpg";
 import LogoutButton from "../components/logoutButton";
+import ProfilePhotoUpload from "../components/ProfilePhotoUpload";
 
 const menuItems = [
   {
@@ -32,9 +35,23 @@ const menuItems = [
     path: "/admin/services",
     icon: FileText,
   },
+  {
+    label: "Profil Admin",
+    path: "/admin/profil",
+    icon: UserRound,
+  },
 ];
 
 function AdminLayout() {
+  const { user, updateProfileImage } = useAuth();
+  const adminName = user?.name || "Rinaldy";
+  const adminInitials = adminName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+    .join("");
+
   return (
     <div className={styles.adminLayout}>
       <aside className={styles.sidebar}>
@@ -70,11 +87,16 @@ function AdminLayout() {
         </nav>
 
         <div className={styles.sidebarFooter}>
-          <div className={styles.adminAvatar}>
-            <img src={adminAvatarImg} alt="Rinaldy" className={styles.avatarImg} />
-          </div>
+          <ProfilePhotoUpload
+            src={user?.avatar || adminAvatarImg}
+            name={adminName}
+            initials={adminInitials}
+            size={38}
+            compact
+            onChange={updateProfileImage}
+          />
           <div className={styles.adminInfo}>
-            <strong>Rinaldy</strong>
+            <strong>{adminName}</strong>
             <span>Administrator</span>
           </div>
         </div>
@@ -93,7 +115,11 @@ function AdminLayout() {
             <div className={styles.statusDot} />
             <span>Administrator</span>
             <div className={styles.topbarAvatar}>
-              <img src={adminAvatarImg} alt="Rinaldy" className={styles.avatarImg} />
+              {user?.avatar ? (
+                <img src={user.avatar} alt={`Foto profil ${adminName}`} className={styles.avatarImg} />
+              ) : (
+                <img src={adminAvatarImg} alt={`Foto profil ${adminName}`} className={styles.avatarImg} />
+              )}
             </div>
 
             <LogoutButton />

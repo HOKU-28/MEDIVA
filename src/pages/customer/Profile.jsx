@@ -20,7 +20,7 @@ const patient = {
   name: "Andi Pratama",
   initials: "AP",
   email: "andi.pratama@mediva.test",
-  phone: "0812-3456-7890",
+  phone: "+6281234567890",
   address: "Jl. Merdeka No. 12, Jakarta Selatan",
   dob: "15 Agustus 1995",
   bloodType: "O+",
@@ -57,13 +57,13 @@ function Profile() {
       .split(" ")
       .filter(Boolean)
       .slice(0, 2)
-      .map((w) => w[0].toUpperCase())
+      .map((word) => word[0].toUpperCase())
       .join("") || patient.initials;
   const totalConsultations =
     user?.totalConsultations !== undefined
       ? user.totalConsultations
       : patient.totalConsultations;
-  const bloodType = user?.bloodType || patient.bloodType;
+  const bloodType = user?.bloodType ?? patient.bloodType;
 
   function handleLogout() {
     logout();
@@ -89,7 +89,13 @@ function Profile() {
 
       <section className={styles.profileCard}>
         <div className={styles.avatarWrap}>
-          <div className={styles.avatar}>{displayInitials}</div>
+          <div className={styles.avatar}>
+            {user?.avatar ? (
+              <img src={user.avatar} alt={`Foto profil ${displayName}`} />
+            ) : (
+              displayInitials
+            )}
+          </div>
         </div>
         <div className={styles.profileInfo}>
           <span className={styles.label}>PASIEN</span>
@@ -101,7 +107,7 @@ function Profile() {
             </div>
             <div className={styles.divider} />
             <div>
-              <strong>{bloodType}</strong>
+              <strong>{bloodType || "Belum diatur"}</strong>
               <span>Gol. Darah</span>
             </div>
           </div>

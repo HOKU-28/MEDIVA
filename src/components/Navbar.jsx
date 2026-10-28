@@ -60,7 +60,13 @@ function Navbar() {
                 className={styles.userPill}
                 onClick={() => setIsOpen(false)}
               >
-                <span className={styles.userAvatar}>{userInitials}</span>
+                <span className={styles.userAvatar}>
+                  {user.avatar ? (
+                    <img src={user.avatar} alt="" />
+                  ) : (
+                    userInitials
+                  )}
+                </span>
                 <span className={styles.userName}>{user.name}</span>
               </Link>
             ) : (
@@ -78,7 +84,13 @@ function Navbar() {
         <div className={styles.desktopAccount}>
           {user ? (
             <Link to={accountPath} className={styles.userPill}>
-              <span className={styles.userAvatar}>{userInitials}</span>
+              <span className={styles.userAvatar}>
+                {user.avatar ? (
+                  <img src={user.avatar} alt="" />
+                ) : (
+                  userInitials
+                )}
+              </span>
               <span className={styles.userName}>{user.name}</span>
             </Link>
           ) : (

@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Star } from "lucide-react";
+import ProfilePhotoUpload from "../../components/ProfilePhotoUpload";
+import {
+  getIndonesianPhoneError,
+  normalizeIndonesianPhone,
+  sanitizePhoneInput,
+} from "../../utils/phone";
 import styles from "./doctor.module.css";
 
 const fields = [
@@ -19,9 +25,27 @@ function DoctorProfile() {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState(doctor);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
 
   function handleSubmit(e) {
     e.preventDefault();
+    setError("");
+
+    const strNumber = form.strNumber.trim();
+    if (!strNumber || !/^\d+$/.test(strNumber)) {
+      setError("Nomor STR wajib diisi dengan angka saja.");
+      return;
+    }
+
+    const phone = form.phone.trim();
+    const phoneError = phone
+      ? getIndonesianPhoneError(phone, "Nomor telepon dokter")
+      : "Nomor telepon dokter wajib diisi.";
+    if (phoneError) {
+      setError(phoneError);
+      return;
+    }
+
     const initials = form.name
       .replace(/^dr\.?\s*/i, "")
       .split(" ")
@@ -29,13 +53,19 @@ function DoctorProfile() {
       .slice(0, 2)
       .map((w) => w[0].toUpperCase())
       .join("");
-    setDoctor({ ...form, initials: initials || doctor.initials });
+    setDoctor({
+      ...form,
+      strNumber,
+      phone: normalizeIndonesianPhone(phone),
+      initials: initials || doctor.initials,
+    });
     setEditing(false);
     setSaved(true);
   }
 
   function startEdit() {
     setForm(doctor);
+    setError("");
     setSaved(false);
     setEditing(true);
   }
@@ -59,11 +89,31 @@ function DoctorProfile() {
 
           {editing ? (
             <form onSubmit={handleSubmit}>
+              {error && <div className={styles.formError} role="alert">{error}</div>}
               <div className={styles.formGrid}>
                 {fields.map(({ key, label, type }) => (
                   <div className={styles.field} key={key}>
                     <label htmlFor={key}>{label}</label>
-                    <input id={key} type={type ?? "text"} className={styles.input} value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} required />
+                    <input
+                      id={key}
+                      type={type ?? "text"}
+                      inputMode={key === "phone" ? "tel" : key === "strNumber" ? "numeric" : undefined}
+                      pattern={key === "strNumber" ? "[0-9]*" : undefined}
+                      className={styles.input}
+                      value={form[key]}
+                      onChange={(e) => {
+                        const value = key === "phone"
+                          ? sanitizePhoneInput(e.target.value)
+                          : key === "strNumber"
+                            ? e.target.value.replace(/\D/g, "")
+                            : e.target.value;
+                        setForm({ ...form, [key]: value });
+                        setError("");
+                      }}
+                      required
+                    />
+                    {key === "strNumber" && <small>Nomor STR berupa angka saja, sesuai form admin.</small>}
+                    {key === "phone" && <small>Minimal 12 angka; gunakan format 08... atau +62.... Tanda hubung boleh, spasi tidak.</small>}
                   </div>
                 ))}
               </div>
@@ -73,7 +123,7 @@ function DoctorProfile() {
               </div>
               <div className={styles.actions}>
                 <button type="submit" className={styles.btn}>Simpan</button>
-                <button type="button" className={styles.btnGhost} onClick={() => setEditing(false)}>Batal</button>
+                <button type="button" className={styles.btnGhost} onClick={() => { setEditing(false); setError(""); }}>Batal</button>
               </div>
             </form>
           ) : (
@@ -82,7 +132,7 @@ function DoctorProfile() {
                 {fields.map(({ key, label }) => (
                   <div className={styles.info} key={key}>
                     <span>{label}</span>
-                    <strong>{doctor[key]}</strong>
+                    <strong>{doctor[key] || "—"}</strong>
                   </div>
                 ))}
               </div>
@@ -93,13 +143,12 @@ function DoctorProfile() {
         </div>
 
         <div className={styles.card} style={{ textAlign: "center" }}>
-          <div className={styles.statIcon} style={{ width: 84, height: 84, margin: "0 auto 14px", borderRadius: "9999px", background: "var(--color-primary)", color: "#fff", fontSize: "1.6rem", fontWeight: 700, overflow: "hidden" }}>
-            {doctor.image ? (
-              <img src={doctor.image} alt={doctor.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-            ) : (
-              doctor.initials
-            )}
-          </div>
+          <ProfilePhotoUpload
+            src={doctor.image}
+            name={doctor.name}
+            initials={doctor.initials}
+            onChange={(image) => setDoctor({ ...doctor, image })}
+          />
           <h2 style={{ marginBottom: 4 }}>{doctor.name}</h2>
           <p style={{ margin: "0 0 12px" }}>{doctor.specialty}</p>
           <span className={`${styles.badge} ${styles.menunggu}`}>

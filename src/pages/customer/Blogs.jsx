@@ -50,7 +50,7 @@ export default function Blogs() {
         <div className={styles.searchWrap}>
           <Search size={18} className={styles.searchIcon} aria-hidden="true" />
           <input
-            type="search"
+            type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari topik atau artikel kesehatan..."

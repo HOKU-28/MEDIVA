@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Send, ArrowLeft, CheckCircle, Sparkles, TriangleAlert } from "lucide-react";
-import { doctorsList } from "../../data/doctorData";
+import { doctorsList, getSavedDoctorProfile } from "../../data/doctorData";
 import styles from "./Chat.module.css";
 
 const specialtyOptions = {
@@ -133,7 +133,7 @@ function Chat() {
   const { doctorId } = useParams();
   const navigate = useNavigate();
   const id = Number(doctorId);
-  const doctor = doctorsList.find((d) => d.id === id);
+  const doctor = getSavedDoctorProfile(doctorsList.find((d) => d.id === id));
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");

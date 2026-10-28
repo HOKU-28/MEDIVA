@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { X, AlertCircle } from "lucide-react";
 import { useAuth } from "../Context/AuthContext";
+import ProfilePhotoUpload from "./ProfilePhotoUpload";
+import {
+  getIndonesianPhoneError,
+  sanitizePhoneInput,
+} from "../utils/phone";
 import styles from "../pages/customer/Profile.module.css";
 
 function getTodayISO() {
@@ -21,9 +26,11 @@ export default function EditProfileModal({
   const [form, setForm] = useState(() => ({
     name: currentUser?.name || "",
     email: currentUser?.email || "",
-    phone: currentUser?.phone || "",
+    phone: sanitizePhoneInput(currentUser?.phone || ""),
     dob: currentUser?.dob || "",
     address: currentUser?.address || "",
+    bloodType: currentUser?.bloodType || "",
+    avatar: currentUser?.avatar || "",
   }));
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -44,7 +51,10 @@ export default function EditProfileModal({
 
   function handleChange(e) {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === "phone" ? sanitizePhoneInput(value) : value,
+    }));
     setError("");
   }
 
@@ -75,11 +85,9 @@ export default function EditProfileModal({
     }
 
     if (cleanPhone) {
-      const digitsOnly = cleanPhone.replace(/[\s-]/g, "");
-      if (!/^(\+?62|0)[0-9]{8,14}$/.test(digitsOnly)) {
-        setError(
-          "Nomor telepon tidak valid. Gunakan format yang benar (contoh: 081234567890)."
-        );
+      const phoneError = getIndonesianPhoneError(cleanPhone);
+      if (phoneError) {
+        setError(phoneError);
         return;
       }
     }
@@ -103,6 +111,8 @@ export default function EditProfileModal({
         phone: cleanPhone,
         dob: cleanDob,
         address: cleanAddress,
+        bloodType: form.bloodType,
+        avatar: form.avatar,
       });
 
       if (onSuccess) {
@@ -153,6 +163,18 @@ export default function EditProfileModal({
         )}
 
         <form onSubmit={handleSubmit} className={styles.editForm}>
+          <ProfilePhotoUpload
+            src={form.avatar}
+            name={form.name || "pasien"}
+            initials={form.name
+              .split(" ")
+              .filter(Boolean)
+              .slice(0, 2)
+              .map((word) => word[0].toUpperCase())
+              .join("")}
+            onChange={(avatar) => setForm((previous) => ({ ...previous, avatar }))}
+          />
+
           <div className={styles.formGroup}>
             <label htmlFor="edit-name">
               Nama Lengkap <span className={styles.required}>*</span>
@@ -197,10 +219,13 @@ export default function EditProfileModal({
               className={styles.input}
               value={form.phone}
               onChange={handleChange}
-              placeholder="Contoh: 0812-3456-7890"
+              placeholder="Contoh: 0812-3456-7890 atau +6281234567890"
               disabled={loading}
               maxLength={20}
             />
+            <small>
+              Spasi tidak diperbolehkan. Tanda hubung (-) boleh digunakan.
+            </small>
           </div>
 
           <div className={styles.formGroup}>
@@ -215,6 +240,27 @@ export default function EditProfileModal({
               max={todayISO}
               disabled={loading}
             />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="edit-blood-type">Golongan Darah</label>
+            <select
+              id="edit-blood-type"
+              name="bloodType"
+              className={styles.input}
+              value={form.bloodType}
+              onChange={handleChange}
+              disabled={loading}
+            >
+              <option value="">Pilih golongan darah</option>
+              {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
+                (bloodType) => (
+                  <option key={bloodType} value={bloodType}>
+                    {bloodType}
+                  </option>
+                )
+              )}
+            </select>
           </div>
 
           <div className={styles.formGroup}>

@@ -8,12 +8,17 @@ import {
   LogOut,
 } from "lucide-react";
 import { useAuth } from "../Context/AuthContext";
+import ProfilePhotoUpload from "../components/ProfilePhotoUpload";
 import {
   initialDoctor,
   initialSchedule,
   initialLeaves,
   initialAppointments,
 } from "../data/doctorData";
+import {
+  getIndonesianPhoneError,
+  normalizeIndonesianPhone,
+} from "../utils/phone";
 import medivaSymbol from "../assets/branding/mediva-symbol.png";
 import styles from "./DoctorLayout.module.css";
 
@@ -25,10 +30,45 @@ const menu = [
 ];
 
 function DoctorLayout() {
-  const [doctor, setDoctor] = useState(initialDoctor);
+  const { logout, user, updateProfileImage } = useAuth();
+  const storageKey = `mediva_doctor_profile_${user?.id || "demo-doctor"}`;
+  const [doctor, setDoctor] = useState(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      const profile = saved
+        ? { ...initialDoctor, ...JSON.parse(saved) }
+        : initialDoctor;
+      const phone = profile.phone || "";
+      return {
+        ...profile,
+        strNumber: (profile.strNumber || "").replace(/\D/g, ""),
+        phone:
+          phone && !getIndonesianPhoneError(phone)
+            ? normalizeIndonesianPhone(phone)
+            : "",
+      };
+    } catch {
+      return {
+        ...initialDoctor,
+        strNumber: initialDoctor.strNumber.replace(/\D/g, ""),
+        phone: normalizeIndonesianPhone(initialDoctor.phone),
+      };
+    }
+  });
   const [schedule, setSchedule] = useState(initialSchedule);
   const [leaves, setLeaves] = useState(initialLeaves);
   const [appointments, setAppointments] = useState(initialAppointments);
+
+  function updateDoctor(profile) {
+    localStorage.setItem(storageKey, JSON.stringify(profile));
+    setDoctor(profile);
+    if (
+      profile.image !== doctor.image &&
+      profile.image?.startsWith("data:image/")
+    ) {
+      updateProfileImage(profile.image);
+    }
+  }
 
   function updateAppointment(id, patch) {
     setAppointments((list) =>
@@ -36,7 +76,6 @@ function DoctorLayout() {
     );
   }
 
-  const { logout } = useAuth();
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -46,7 +85,7 @@ function DoctorLayout() {
 
   const context = {
     doctor,
-    setDoctor,
+    setDoctor: updateDoctor,
     schedule,
     setSchedule,
     leaves,
@@ -67,13 +106,14 @@ function DoctorLayout() {
         </div>
 
         <div className={styles.user}>
-          <div className={styles.avatar}>
-            {doctor.image ? (
-              <img src={doctor.image} alt={doctor.name} className={styles.avatarImg} />
-            ) : (
-              doctor.initials
-            )}
-          </div>
+          <ProfilePhotoUpload
+            src={doctor.image}
+            name={doctor.name}
+            initials={doctor.initials}
+            size={42}
+            compact
+            onChange={(image) => updateDoctor({ ...doctor, image })}
+          />
           <div>
             <strong>{doctor.name}</strong>
             <span>{doctor.specialty}</span>
