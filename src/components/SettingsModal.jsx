@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import {
   X,
   KeyRound,
+  Eye,
+  EyeOff,
   Bell,
   ShieldCheck,
   AlertCircle,
@@ -48,6 +50,7 @@ export default function SettingsModal({
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
+  const [visiblePasswords, setVisiblePasswords] = useState({});
 
   const [preferences, setPreferences] = useState(() =>
     readPreferences(currentUser?.id)
@@ -71,6 +74,13 @@ export default function SettingsModal({
     setPasswordForm((prev) => ({ ...prev, [name]: value }));
     setPasswordError("");
     setPasswordSuccess("");
+  }
+
+  function togglePasswordVisibility(name) {
+    setVisiblePasswords((previous) => ({
+      ...previous,
+      [name]: !previous[name],
+    }));
   }
 
   function handlePasswordSubmit(e) {
@@ -234,52 +244,82 @@ export default function SettingsModal({
             <form onSubmit={handlePasswordSubmit} className={styles.editForm}>
               <div className={styles.formGroup}>
                 <label htmlFor="current-password">Password Saat Ini</label>
-                <input
-                  id="current-password"
-                  name="currentPassword"
-                  type="password"
-                  className={styles.input}
-                  value={passwordForm.currentPassword}
-                  onChange={handlePasswordChange}
-                  placeholder="Masukkan password saat ini"
-                  autoComplete="current-password"
-                  disabled={passwordLoading}
-                  required
-                />
+                <div className={styles.passwordFieldWrap}>
+                  <input
+                    id="current-password"
+                    name="currentPassword"
+                    type={visiblePasswords.currentPassword ? "text" : "password"}
+                    className={styles.input}
+                    value={passwordForm.currentPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="Masukkan password saat ini"
+                    autoComplete="current-password"
+                    disabled={passwordLoading}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className={styles.passwordVisibilityButton}
+                    onClick={() => togglePasswordVisibility("currentPassword")}
+                    aria-label={visiblePasswords.currentPassword ? "Sembunyikan password saat ini" : "Lihat password saat ini"}
+                  >
+                    {visiblePasswords.currentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <div className={styles.formGroup}>
                 <label htmlFor="new-password">Password Baru</label>
-                <input
-                  id="new-password"
-                  name="newPassword"
-                  type="password"
-                  className={styles.input}
-                  value={passwordForm.newPassword}
-                  onChange={handlePasswordChange}
-                  placeholder="Minimal 8 karakter"
-                  autoComplete="new-password"
-                  disabled={passwordLoading}
-                  minLength={8}
-                  required
-                />
+                <div className={styles.passwordFieldWrap}>
+                  <input
+                    id="new-password"
+                    name="newPassword"
+                    type={visiblePasswords.newPassword ? "text" : "password"}
+                    className={styles.input}
+                    value={passwordForm.newPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="Minimal 8 karakter"
+                    autoComplete="new-password"
+                    disabled={passwordLoading}
+                    minLength={8}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className={styles.passwordVisibilityButton}
+                    onClick={() => togglePasswordVisibility("newPassword")}
+                    aria-label={visiblePasswords.newPassword ? "Sembunyikan password baru" : "Lihat password baru"}
+                  >
+                    {visiblePasswords.newPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <div className={styles.formGroup}>
                 <label htmlFor="confirm-password">Konfirmasi Password Baru</label>
-                <input
-                  id="confirm-password"
-                  name="confirmPassword"
-                  type="password"
-                  className={styles.input}
-                  value={passwordForm.confirmPassword}
-                  onChange={handlePasswordChange}
-                  placeholder="Ulangi password baru"
-                  autoComplete="new-password"
-                  disabled={passwordLoading}
-                  minLength={8}
-                  required
-                />
+                <div className={styles.passwordFieldWrap}>
+                  <input
+                    id="confirm-password"
+                    name="confirmPassword"
+                    type={visiblePasswords.confirmPassword ? "text" : "password"}
+                    className={styles.input}
+                    value={passwordForm.confirmPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="Ulangi password baru"
+                    autoComplete="new-password"
+                    disabled={passwordLoading}
+                    minLength={8}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className={styles.passwordVisibilityButton}
+                    onClick={() => togglePasswordVisibility("confirmPassword")}
+                    aria-label={visiblePasswords.confirmPassword ? "Sembunyikan konfirmasi password" : "Lihat konfirmasi password"}
+                  >
+                    {visiblePasswords.confirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <p className={styles.helperText}>

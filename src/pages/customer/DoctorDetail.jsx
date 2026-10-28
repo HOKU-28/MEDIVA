@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Star, TriangleAlert } from "lucide-react";
-import { doctorsList } from "../../data/doctorData";
+import { doctorsList, getSavedDoctorProfile } from "../../data/doctorData";
 import styles from "./DoctorDetail.module.css";
 
 function DoctorDetail() {
@@ -11,7 +11,9 @@ function DoctorDetail() {
     window.scrollTo(0, 0);
   }, [id]);
 
-  const doctor = doctorsList.find((doc) => doc.id === Number(id));
+  const doctor = getSavedDoctorProfile(
+    doctorsList.find((doc) => doc.id === Number(id))
+  );
 
   if (!doctor) {
     return (

@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { TriangleAlert, CheckCircle } from "lucide-react";
-import { doctorsList } from "../../data/doctorData";
+import { useAuth } from "../../Context/AuthContext";
+import { doctorsList, getSavedDoctorProfile } from "../../data/doctorData";
 import styles from "./Booking.module.css";
 
 const timeSlots = ["09.00", "10.00", "11.00", "13.00", "14.00"];
 
 function Booking() {
   const { id } = useParams();
+  const { incrementConsultations } = useAuth();
 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -18,7 +20,9 @@ function Booking() {
     window.scrollTo(0, 0);
   }, []);
 
-  const doctor = doctorsList.find((doc) => doc.id === Number(id));
+  const doctor = getSavedDoctorProfile(
+    doctorsList.find((doc) => doc.id === Number(id))
+  );
 
   if (!doctor) {
     return (
@@ -33,6 +37,8 @@ function Booking() {
     event.preventDefault();
 
     if (date && time) {
+      incrementConsultations();
+
       const formattedDate = new Date(date).toLocaleDateString("id-ID", {
         day: "numeric",
         month: "long",

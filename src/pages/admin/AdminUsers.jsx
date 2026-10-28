@@ -20,6 +20,11 @@ import {
 } from "lucide-react";
 
 import styles from "./AdminUsers.module.css";
+import {
+    getIndonesianPhoneError,
+    normalizeIndonesianPhone,
+    sanitizePhoneInput,
+} from "../../utils/phone";
 
 const initialUsers = [
     {
@@ -27,7 +32,7 @@ const initialUsers = [
         patientId: "MED-0001",
         name: "Jayden Customer",
         email: "jayden@gmail.com",
-        phone: "081234567801",
+        phone: "+6281234567801",
         birthDate: "2000-05-12",
         role: "Customer",
         status: "Aktif",
@@ -56,7 +61,7 @@ const initialUsers = [
         patientId: "MED-0002",
         name: "Edward Customer",
         email: "edward@gmail.com",
-        phone: "081234567802",
+        phone: "+6281234567802",
         birthDate: "1998-08-20",
         role: "Customer",
         status: "Aktif",
@@ -77,7 +82,7 @@ const initialUsers = [
         patientId: "MED-0003",
         name: "Dewi Lestari",
         email: "dewi@gmail.com",
-        phone: "081234567803",
+        phone: "+6281234567803",
         birthDate: "1995-03-15",
         role: "Customer",
         status: "Aktif",
@@ -89,7 +94,7 @@ const initialUsers = [
         patientId: "MED-0004",
         name: "Andi Saputra",
         email: "andi@gmail.com",
-        phone: "081234567804",
+        phone: "+6281234567804",
         birthDate: "1992-11-02",
         role: "Customer",
         status: "Nonaktif",
@@ -206,7 +211,7 @@ function AdminUsers() {
         setFormData({
             name: user.name,
             email: user.email,
-            phone: user.phone || "",
+            phone: sanitizePhoneInput(user.phone || ""),
             birthDate: user.birthDate || "",
         });
         setErrorMessage("");
@@ -222,10 +227,12 @@ function AdminUsers() {
 
     function handleInputChange(event) {
         const { name, value } = event.target;
+        const nextValue =
+            name === "phone" ? sanitizePhoneInput(value) : value;
 
         setFormData((previous) => ({
             ...previous,
-            [name]: value,
+            [name]: nextValue,
         }));
     }
 
@@ -241,6 +248,13 @@ function AdminUsers() {
             return;
         }
 
+        const phoneError = getIndonesianPhoneError(phone);
+        if (phoneError) {
+            setErrorMessage(phoneError);
+            return;
+        }
+        const normalizedPhone = phone ? normalizeIndonesianPhone(phone) : "";
+
         const emailExists = customers.some(
             (user) =>
                 user.email.toLowerCase() === email &&
@@ -255,7 +269,7 @@ function AdminUsers() {
         const updatedData = {
             name,
             email,
-            phone,
+            phone: normalizedPhone,
             birthDate: formData.birthDate,
         };
 
@@ -376,7 +390,7 @@ function AdminUsers() {
                     <div className={styles.searchBox}>
                         <Search size={18} />
                         <input
-                            type="search"
+                            type="text"
                             placeholder="Cari nama, ID, atau email..."
                             value={searchTerm}
                             onChange={(event) =>
@@ -762,7 +776,7 @@ function AdminUsers() {
                         <form onSubmit={handleSubmit}>
                             <div className={styles.modalBody}>
                                 {errorMessage && (
-                                    <div className={styles.errorMessage}>
+                                    <div className={styles.errorMessage} role="alert">
                                         <AlertCircle size={17} />
                                         {errorMessage}
                                     </div>
@@ -801,13 +815,18 @@ function AdminUsers() {
                                     </label>
                                     <input
                                         id="patient-phone"
-                                        type="tel"
+                                        type="text"
                                         name="phone"
+                                        inputMode="tel"
+                                        maxLength={20}
                                         value={formData.phone}
                                         onChange={handleInputChange}
                                         autoComplete="tel"
-                                        placeholder="08xxxxxxxxxx"
+                                        placeholder="08... atau +628..."
                                     />
+                                    <small className={styles.helperText}>
+                                        Tanpa spasi, minimal 12 angka. Tanda hubung boleh; awalan kode negara +62.
+                                    </small>
                                 </div>
 
                                 <div className={styles.formGroup}>

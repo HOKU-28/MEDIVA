@@ -6,6 +6,8 @@ import {
     Lock,
     AlertCircle,
     ShieldCheck,
+    Eye,
+    EyeOff,
 } from "lucide-react";
 import { useAuth } from "../../Context/AuthContext";
 import medivaLogo from "../../assets/branding/mediva-logo.png";
@@ -23,6 +25,7 @@ export default function Register() {
     });
 
     const [error, setError] = useState("");
+    const [visiblePasswords, setVisiblePasswords] = useState({});
 
     if (user) {
         return <Navigate to="/" replace />;
@@ -37,6 +40,13 @@ export default function Register() {
         }));
 
         setError("");
+    }
+
+    function togglePasswordVisibility(name) {
+        setVisiblePasswords((previous) => ({
+            ...previous,
+            [name]: !previous[name],
+        }));
     }
 
     function handleSubmit(event) {
@@ -144,7 +154,7 @@ export default function Register() {
                             <input
                                 id="register-password"
                                 name="password"
-                                type="password"
+                                type={visiblePasswords.password ? "text" : "password"}
                                 placeholder="Minimal 8 karakter"
                                 value={form.password}
                                 onChange={handleChange}
@@ -152,6 +162,14 @@ export default function Register() {
                                 minLength={8}
                                 required
                             />
+                            <button
+                                type="button"
+                                className={styles.passwordVisibilityButton}
+                                onClick={() => togglePasswordVisibility("password")}
+                                aria-label={visiblePasswords.password ? "Sembunyikan password" : "Lihat password"}
+                            >
+                                {visiblePasswords.password ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
                         </div>
                     </div>
 
@@ -164,7 +182,7 @@ export default function Register() {
                             <input
                                 id="register-confirm-password"
                                 name="confirmPassword"
-                                type="password"
+                                type={visiblePasswords.confirmPassword ? "text" : "password"}
                                 placeholder="Ulangi password"
                                 value={form.confirmPassword}
                                 onChange={handleChange}
@@ -172,6 +190,14 @@ export default function Register() {
                                 minLength={8}
                                 required
                             />
+                            <button
+                                type="button"
+                                className={styles.passwordVisibilityButton}
+                                onClick={() => togglePasswordVisibility("confirmPassword")}
+                                aria-label={visiblePasswords.confirmPassword ? "Sembunyikan konfirmasi password" : "Lihat konfirmasi password"}
+                            >
+                                {visiblePasswords.confirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
                         </div>
                     </div>
 

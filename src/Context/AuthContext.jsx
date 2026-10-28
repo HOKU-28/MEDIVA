@@ -3,6 +3,10 @@ import {
     useContext,
     useState,
 } from "react";
+import {
+    getIndonesianPhoneError,
+    normalizeIndonesianPhone,
+} from "../utils/phone";
 
 const AuthContext = createContext(null);
 
@@ -17,7 +21,7 @@ const demoUsers = [
         password: "Customer123!",
         role: "customer",
         status: "Aktif",
-        phone: "0812-3456-7890",
+        phone: "+6281234567890",
         address: "Jl. Merdeka No. 12, Jakarta Selatan",
         dob: "1995-08-15",
         bloodType: "O+",
@@ -30,6 +34,7 @@ const demoUsers = [
         password: "Admin123!",
         role: "admin",
         status: "Aktif",
+        phone: "+6282288889988",
     },
     {
         id: "demo-doctor",
@@ -67,9 +72,28 @@ function readSession() {
     }
 }
 
+function readDemoDoctorProfileImage() {
+    try {
+        const savedProfile = localStorage.getItem("mediva_doctor_profile_demo-doctor");
+        const profile = savedProfile ? JSON.parse(savedProfile) : null;
+        return typeof profile?.image === "string" ? profile.image : "";
+    } catch {
+        return "";
+    }
+}
+
 export function AuthProvider({ children }) {
     const [registeredUsers, setRegisteredUsers] = useState(readUsers);
     const [user, setUser] = useState(readSession);
+    const demoProfileImages = Object.fromEntries(
+        registeredUsers
+            .filter((account) => account.id.startsWith("demo-") && account.avatar)
+            .map((account) => [account.id, account.avatar])
+    );
+    const savedDoctorImage = readDemoDoctorProfileImage();
+    if (savedDoctorImage) {
+        demoProfileImages["demo-doctor"] = savedDoctorImage;
+    }
 
     function register({ name, email, password }) {
         const cleanName = name.trim();
@@ -139,11 +163,14 @@ export function AuthProvider({ children }) {
             name: account.name,
             email: account.email,
             role: account.role,
-            phone: account.phone || "",
+            phone:
+                account.phone ||
+                (account.role === "admin" ? "+6282288889988" : ""),
             dob: account.dob || "",
             address: account.address || "",
             bloodType: account.bloodType || "",
             totalConsultations: account.totalConsultations ?? 0,
+            avatar: account.avatar || "",
         };
 
         localStorage.setItem(
@@ -156,16 +183,18 @@ export function AuthProvider({ children }) {
         return session;
     }
 
-    function updateProfile({ name, email, phone, dob, address }) {
+    function updateProfile({ name, email, phone, dob, address, bloodType, avatar }) {
         if (!user) {
             throw new Error("Tidak ada sesi pengguna yang aktif.");
         }
 
         const cleanName = (name || "").trim();
         const cleanEmail = (email || "").trim().toLowerCase();
-        const cleanPhone = (phone || "").trim();
+        const cleanPhone = phone || "";
         const cleanDob = (dob || "").trim();
         const cleanAddress = (address || "").trim();
+        const cleanBloodType = (bloodType || "").trim();
+        const cleanAvatar = avatar ?? user.avatar ?? "";
 
         if (!cleanName) {
             throw new Error("Nama lengkap wajib diisi.");
@@ -179,6 +208,14 @@ export function AuthProvider({ children }) {
         if (!emailRegex.test(cleanEmail)) {
             throw new Error("Format email tidak valid.");
         }
+
+        if (cleanPhone) {
+            const phoneError = getIndonesianPhoneError(cleanPhone);
+            if (phoneError) throw new Error(phoneError);
+        }
+        const normalizedPhone = cleanPhone
+            ? normalizeIndonesianPhone(cleanPhone)
+            : "";
 
         const allUsers = [...demoUsers, ...registeredUsers];
         const emailExists = allUsers.some(
@@ -208,9 +245,11 @@ export function AuthProvider({ children }) {
                     ...item,
                     name: cleanName,
                     email: cleanEmail,
-                    phone: cleanPhone,
+                    phone: normalizedPhone,
                     dob: cleanDob,
                     address: cleanAddress,
+                    bloodType: cleanBloodType,
+                    avatar: cleanAvatar,
                 };
             }
             return item;
@@ -226,9 +265,11 @@ export function AuthProvider({ children }) {
                     ...demoAccount,
                     name: cleanName,
                     email: cleanEmail,
-                    phone: cleanPhone,
+                    phone: normalizedPhone,
                     dob: cleanDob,
                     address: cleanAddress,
+                    bloodType: cleanBloodType,
+                    avatar: cleanAvatar,
                 };
                 const newRegisteredUsers = [...registeredUsers, updatedDemoUser];
                 localStorage.setItem(
@@ -243,15 +284,81 @@ export function AuthProvider({ children }) {
             ...user,
             name: cleanName,
             email: cleanEmail,
-            phone: cleanPhone,
+            phone: normalizedPhone,
             dob: cleanDob,
             address: cleanAddress,
+            bloodType: cleanBloodType,
+            avatar: cleanAvatar,
         };
 
         localStorage.setItem(SESSION_KEY, JSON.stringify(updatedSession));
         setUser(updatedSession);
 
         return updatedSession;
+    }
+
+    function updateProfileImage(avatar) {
+        if (!user) {
+            throw new Error("Tidak ada sesi pengguna yang aktif.");
+        }
+
+        if (typeof avatar !== "string" || !avatar.startsWith("data:image/")) {
+            throw new Error("Format foto profil tidak valid.");
+        }
+
+        const allUsers = [...demoUsers, ...registeredUsers];
+        const account = allUsers.find((item) => item.id === user.id);
+        if (!account) {
+            throw new Error("Akun pengguna tidak ditemukan.");
+        }
+
+        const updatedAccount = { ...account, avatar };
+        const updatedUsers = registeredUsers.some((item) => item.id === user.id)
+            ? registeredUsers.map((item) =>
+                item.id === user.id ? updatedAccount : item
+            )
+            : [...registeredUsers, updatedAccount];
+        const updatedSession = { ...user, avatar };
+
+        localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
+        localStorage.setItem(SESSION_KEY, JSON.stringify(updatedSession));
+        setRegisteredUsers(updatedUsers);
+        setUser(updatedSession);
+
+        return updatedSession;
+    }
+
+    function incrementConsultations() {
+        if (!user || user.role !== "customer") {
+            throw new Error("Tidak ada sesi pasien yang aktif.");
+        }
+
+        const allUsers = [...demoUsers, ...registeredUsers];
+        const account = allUsers.find((item) => item.id === user.id);
+        if (!account) {
+            throw new Error("Akun pengguna tidak ditemukan.");
+        }
+
+        const updatedAccount = {
+            ...account,
+            totalConsultations: (Number(account.totalConsultations) || 0) + 1,
+        };
+        const updatedUsers = registeredUsers.some((item) => item.id === user.id)
+            ? registeredUsers.map((item) =>
+                item.id === user.id ? updatedAccount : item
+            )
+            : [...registeredUsers, updatedAccount];
+        const updatedSession = {
+            ...user,
+            totalConsultations: updatedAccount.totalConsultations,
+        };
+
+        localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
+        localStorage.setItem(SESSION_KEY, JSON.stringify(updatedSession));
+        setRegisteredUsers(updatedUsers);
+        setUser(updatedSession);
+
+        return updatedSession.totalConsultations;
     }
 
     function changePassword({ currentPassword, newPassword, confirmPassword }) {
@@ -335,10 +442,13 @@ export function AuthProvider({ children }) {
         <AuthContext.Provider
             value={{
                 user,
+                demoProfileImages,
                 register,
                 login,
                 logout,
                 updateProfile,
+                updateProfileImage,
+                incrementConsultations,
                 changePassword,
                 isAuthenticated: Boolean(user),
             }}

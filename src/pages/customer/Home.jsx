@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Stethoscope, Smile, Baby, Star, Clock, ShieldCheck } from "lucide-react";
-import { doctorsList } from "../../data/doctorData";
+import { doctorsList, getSavedDoctorProfile } from "../../data/doctorData";
 import { useAuth } from "../../Context/AuthContext";
 import styles from "./Home.module.css";
 
@@ -24,7 +24,7 @@ const services = [
 
 function Home() {
   const { user } = useAuth();
-  const featuredDoctors = doctorsList.slice(0, 3);
+  const featuredDoctors = doctorsList.slice(0, 3).map(getSavedDoctorProfile);
 
   const historyLink =
     user?.role === "doctor"

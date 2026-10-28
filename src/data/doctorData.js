@@ -39,11 +39,11 @@ export const initialDoctor = {
   initials: "SW",
   image: doctorSarahWijaya,
   specialty: "Dokter Umum",
-  strNumber: "STR-3174-0001-2018",
+  strNumber: "317400012018",
   education: "Universitas Indonesia",
   experience: "8 tahun pengalaman",
   location: "MEDIVA Clinic Jakarta",
-  phone: "0812-3456-7890",
+  phone: "+6281234567890",
   email: "sarah.wijaya@mediva.id",
   rating: "4.9",
   bio: "Dokter umum yang berpengalaman dalam menangani berbagai keluhan kesehatan umum dan memberikan konsultasi kesehatan.",
@@ -71,7 +71,7 @@ export const initialAppointments = [
     diagnosis: "ISPA (infeksi saluran pernapasan akut)",
     notes: "Disarankan istirahat cukup dan banyak minum air putih.",
     prescription: "Paracetamol 500 mg 3x1, Ambroxol 30 mg 3x1",
-    patient: { id: 1, name: "Rizky Ananda", age: 27, gender: "Laki-laki", phone: "0812-1111-2222", bloodType: "O", allergy: "Tidak ada" },
+    patient: { id: 1, name: "Rizky Ananda", age: 27, gender: "Laki-laki", phone: "+6281211112222", bloodType: "O", allergy: "Tidak ada" },
   },
   {
     id: 102,
@@ -82,7 +82,7 @@ export const initialAppointments = [
     diagnosis: "",
     notes: "",
     prescription: "",
-    patient: { id: 2, name: "Dewi Lestari", age: 34, gender: "Perempuan", phone: "0813-3333-4444", bloodType: "A", allergy: "Alergi penisilin" },
+    patient: { id: 2, name: "Dewi Lestari", age: 34, gender: "Perempuan", phone: "+6281333334444", bloodType: "A", allergy: "Alergi penisilin" },
   },
   {
     id: 103,
@@ -93,7 +93,7 @@ export const initialAppointments = [
     diagnosis: "",
     notes: "",
     prescription: "",
-    patient: { id: 3, name: "Bagas Prasetyo", age: 41, gender: "Laki-laki", phone: "0857-5555-6666", bloodType: "B", allergy: "Tidak ada" },
+    patient: { id: 3, name: "Bagas Prasetyo", age: 41, gender: "Laki-laki", phone: "+6285755556666", bloodType: "B", allergy: "Tidak ada" },
   },
   {
     id: 104,
@@ -104,7 +104,7 @@ export const initialAppointments = [
     diagnosis: "",
     notes: "",
     prescription: "",
-    patient: { id: 4, name: "Siti Rahmawati", age: 58, gender: "Perempuan", phone: "0821-7777-8888", bloodType: "AB", allergy: "Tidak ada" },
+    patient: { id: 4, name: "Siti Rahmawati", age: 58, gender: "Perempuan", phone: "+6282177778888", bloodType: "AB", allergy: "Tidak ada" },
   },
   {
     id: 105,
@@ -115,7 +115,7 @@ export const initialAppointments = [
     diagnosis: "",
     notes: "",
     prescription: "",
-    patient: { id: 1, name: "Rizky Ananda", age: 27, gender: "Laki-laki", phone: "0812-1111-2222", bloodType: "O", allergy: "Tidak ada" },
+    patient: { id: 1, name: "Rizky Ananda", age: 27, gender: "Laki-laki", phone: "+6281211112222", bloodType: "O", allergy: "Tidak ada" },
   },
   {
     id: 106,
@@ -126,7 +126,7 @@ export const initialAppointments = [
     diagnosis: "Common cold",
     notes: "Istirahat dan konsumsi vitamin C.",
     prescription: "Vitamin C 500 mg 1x1, Loratadine 10 mg 1x1",
-    patient: { id: 2, name: "Dewi Lestari", age: 34, gender: "Perempuan", phone: "0813-3333-4444", bloodType: "A", allergy: "Alergi penisilin" },
+    patient: { id: 2, name: "Dewi Lestari", age: 34, gender: "Perempuan", phone: "+6281333334444", bloodType: "A", allergy: "Alergi penisilin" },
   },
   {
     id: 107,
@@ -137,7 +137,7 @@ export const initialAppointments = [
     diagnosis: "",
     notes: "",
     prescription: "",
-    patient: { id: 5, name: "Hendra Gunawan", age: 46, gender: "Laki-laki", phone: "0856-9999-0000", bloodType: "O", allergy: "Tidak ada" },
+    patient: { id: 5, name: "Hendra Gunawan", age: 46, gender: "Laki-laki", phone: "+6285699990000", bloodType: "O", allergy: "Tidak ada" },
   },
 ];
 
@@ -155,7 +155,7 @@ export const doctorsList = [
     description:
       "Dokter umum yang berpengalaman dalam menangani berbagai keluhan kesehatan umum dan memberikan konsultasi kesehatan.",
     schedule: "Senin - Jumat, 09.00 - 15.00",
-    strNumber: "STR-3174-0001-2018",
+    strNumber: "317400012018",
   },
   {
     id: 2,
@@ -240,6 +240,17 @@ export const doctorSpecialties = [
 
 export function getDoctorById(id) {
   if (!id) return null;
-  return doctorsList.find((d) => d.id === Number(id)) || null;
+  const doctor = doctorsList.find((d) => d.id === Number(id));
+  return doctor ? getSavedDoctorProfile(doctor) : null;
 }
 
+export function getSavedDoctorProfile(doctor) {
+  if (!doctor || doctor.id !== initialDoctor.id) return doctor;
+
+  try {
+    const saved = localStorage.getItem("mediva_doctor_profile_demo-doctor");
+    return saved ? { ...doctor, ...JSON.parse(saved) } : doctor;
+  } catch {
+    return doctor;
+  }
+}

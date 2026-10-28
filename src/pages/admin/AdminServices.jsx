@@ -69,6 +69,13 @@ function formatRupiah(value) {
     }).format(value);
 }
 
+function formatPriceInput(value) {
+    if (!value) return "";
+    return new Intl.NumberFormat("id-ID", {
+        maximumFractionDigits: 0,
+    }).format(Number(value));
+}
+
 function AdminServices() {
     const [services, setServices] = useState(initialServices);
     const [search, setSearch] = useState("");
@@ -142,8 +149,8 @@ function AdminServices() {
             return;
         }
 
-        if (!Number.isFinite(price) || price <= 0) {
-            alert("Harga harus lebih besar dari 0.");
+        if (!Number.isInteger(price) || price <= 0) {
+            alert("Harga harus berupa angka bulat lebih besar dari 0.");
             return;
         }
 
@@ -534,13 +541,15 @@ function AdminServices() {
                                     <label htmlFor="servicePrice">Harga (Rupiah)</label>
                                     <input
                                         id="servicePrice"
-                                        type="number"
-                                        min="1"
-                                        step="1000"
+                                        type="text"
+                                        inputMode="numeric"
                                         placeholder="100000"
-                                        value={form.price}
+                                        value={formatPriceInput(form.price)}
                                         onChange={(event) =>
-                                            setForm({ ...form, price: event.target.value })
+                                            setForm({
+                                                ...form,
+                                                price: event.target.value.replace(/\D/g, ""),
+                                            })
                                         }
                                         required
                                     />

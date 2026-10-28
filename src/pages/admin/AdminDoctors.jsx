@@ -1,6 +1,15 @@
 import { useState } from "react";
 import styles from "./AdminDoctors.module.css";
 import { Pencil, Trash2, Stethoscope } from "lucide-react";
+import {
+    getIndonesianPhoneError,
+    normalizeIndonesianPhone,
+    sanitizePhoneInput,
+} from "../../utils/phone";
+import {
+    doctorsList,
+    getSavedDoctorProfile,
+} from "../../data/doctorData";
 
 const initialDoctors = [
     {
@@ -8,11 +17,11 @@ const initialDoctors = [
         name: "Dr. Sarah Wijaya",
         email: "sarah@mediva.com",
         specialty: "Dokter Umum",
-        strNumber: "STR-2024-001",
+        strNumber: "2024001",
         education: "Universitas Indonesia",
         experience: "5 tahun",
         location: "Medan",
-        phone: "081234567890",
+        phone: "+6281234567890",
         bio: "Dokter umum yang berpengalaman dalam pelayanan kesehatan dan pemeriksaan pasien.",
         initials: "SW",
         rating: 4.9,
@@ -23,11 +32,11 @@ const initialDoctors = [
         name: "Dr. Andi Pratama",
         email: "andi@mediva.com",
         specialty: "Spesialis Jantung",
-        strNumber: "STR-2024-002",
+        strNumber: "2024002",
         education: "Universitas Sumatera Utara",
         experience: "8 tahun",
         location: "Medan",
-        phone: "081234567891",
+        phone: "+6281234567891",
         bio: "Berfokus pada pemeriksaan dan penanganan penyakit jantung.",
         initials: "AP",
         rating: 4.8,
@@ -38,11 +47,11 @@ const initialDoctors = [
         name: "Dr. Maya Putri",
         email: "maya@mediva.com",
         specialty: "Spesialis Anak",
-        strNumber: "STR-2024-003",
+        strNumber: "2024003",
         education: "Universitas Gadjah Mada",
         experience: "6 tahun",
         location: "Medan",
-        phone: "081234567892",
+        phone: "+6281234567892",
         bio: "Melayani konsultasi kesehatan dan tumbuh kembang anak.",
         initials: "MP",
         rating: 4.7,
@@ -118,11 +127,11 @@ function AdminDoctors() {
             email: doctor.email ?? "",
             password: "",
             specialty: doctor.specialty ?? "",
-            strNumber: doctor.strNumber ?? "",
+            strNumber: doctor.strNumber?.replace(/\D/g, "") ?? "",
             education: doctor.education ?? "",
             experience: doctor.experience ?? "",
             location: doctor.location ?? "",
-            phone: doctor.phone ?? "",
+            phone: sanitizePhoneInput(doctor.phone ?? ""),
             bio: doctor.bio ?? "",
             rating: String(doctor.rating ?? "5.0"),
             status: doctor.status ?? "Aktif",
@@ -143,10 +152,16 @@ function AdminDoctors() {
 
     function handleChange(event) {
         const { name, value } = event.target;
+        const nextValue =
+            name === "phone" || name === "strNumber"
+                ? (name === "phone"
+                    ? sanitizePhoneInput(value)
+                    : value.replace(/\D/g, ""))
+                : value;
 
         setForm((previous) => ({
             ...previous,
-            [name]: value,
+            [name]: nextValue,
         }));
     }
 
@@ -155,6 +170,20 @@ function AdminDoctors() {
         setFormError("");
 
         const normalizedEmail = form.email.trim().toLowerCase();
+        const enteredPhone = form.phone.trim();
+        const strNumber = form.strNumber.trim();
+
+        const phoneError = getIndonesianPhoneError(enteredPhone, "Nomor telepon dokter");
+        if (phoneError) {
+            setFormError(phoneError);
+            return;
+        }
+        const phone = normalizeIndonesianPhone(enteredPhone);
+
+        if (strNumber && !/^\d+$/.test(strNumber)) {
+            setFormError("Nomor STR hanya boleh berisi angka.");
+            return;
+        }
 
         const duplicateEmail = doctors.some(
             (doctor) =>
@@ -176,11 +205,11 @@ function AdminDoctors() {
             name: form.name.trim(),
             email: normalizedEmail,
             specialty: form.specialty.trim(),
-            strNumber: form.strNumber.trim(),
+            strNumber,
             education: form.education.trim(),
             experience: form.experience.trim(),
             location: form.location.trim(),
-            phone: form.phone.trim(),
+            phone,
             bio: form.bio.trim(),
             initials: getInitials(form.name),
             rating: Number(form.rating) || 0,
@@ -350,12 +379,22 @@ function AdminDoctors() {
                         </thead>
 
                         <tbody>
-                            {filteredDoctors.map((doctor) => (
+                            {filteredDoctors.map((doctor) => {
+                                const profile = doctorsList.find(
+                                    (item) => item.name === doctor.name
+                                );
+                                const image = getSavedDoctorProfile(profile)?.image;
+
+                                return (
                                 <tr key={doctor.id}>
                                     <td>
                                         <div className={styles.doctorCell}>
                                             <div className={styles.avatar}>
-                                                {doctor.initials || getInitials(doctor.name)}
+                                                {image ? (
+                                                    <img src={image} alt={doctor.name} />
+                                                ) : (
+                                                    doctor.initials || getInitials(doctor.name)
+                                                )}
                                             </div>
 
                                             <div className={styles.doctorIdentity}>
@@ -421,7 +460,8 @@ function AdminDoctors() {
 
                                     </td>
                                 </tr>
-                            ))}
+                                );
+                            })}
 
                             {filteredDoctors.length === 0 && (
                                 <tr>
@@ -576,9 +616,15 @@ function AdminDoctors() {
                                         name="strNumber"
                                         value={form.strNumber}
                                         onChange={handleChange}
-                                        placeholder="Nomor registrasi dokter"
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        placeholder="Contoh: 31742024001"
                                         required
                                     />
+                                    <small className={styles.helperText}>
+                                        Masukkan nomor STR berupa angka saja.
+                                    </small>
                                 </label>
 
                                 <label className={styles.field}>
@@ -617,14 +663,19 @@ function AdminDoctors() {
                                 <label className={styles.field}>
                                     <span>No. Telepon *</span>
                                     <input
-                                        type="tel"
+                                        type="text"
                                         name="phone"
                                         value={form.phone}
                                         onChange={handleChange}
-                                        placeholder="Contoh: 081234567890"
+                                        inputMode="tel"
+                                        maxLength={20}
+                                        placeholder="08... atau +628..."
                                         autoComplete="tel"
                                         required
                                     />
+                                    <small className={styles.helperText}>
+                                        Tanpa spasi, minimal 12 angka. Tanda hubung boleh; awalan kode negara +62.
+                                    </small>
                                 </label>
 
                                 <label className={styles.field}>
