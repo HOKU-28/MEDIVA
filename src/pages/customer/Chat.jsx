@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Send, ArrowLeft, CheckCircle, Sparkles, TriangleAlert } from "lucide-react";
+import { useAuth } from "../../Context/AuthContext";
 import { doctorsList, getSavedDoctorProfile } from "../../data/doctorData";
+import { readUserHistory, writeUserHistory } from "../../utils/userHistory";
 import styles from "./Chat.module.css";
 
 const specialtyOptions = {
@@ -67,17 +69,6 @@ function getTime() {
   });
 }
 
-function readStorageList(key, fallback = []) {
-  try {
-    const stored = localStorage.getItem(key);
-    if (stored === null || stored === "") return fallback;
-    const parsed = JSON.parse(stored);
-    return Array.isArray(parsed) ? parsed : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
 function generateDoctorReply(text, _doctor, _stage) {
   const lower = text.toLowerCase();
 
@@ -132,37 +123,100 @@ function generateDoctorReply(text, _doctor, _stage) {
 function Chat() {
   const { doctorId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const requestedSessionId = searchParams.get("sessionId");
+  const { user, incrementConsultations } = useAuth();
   const id = Number(doctorId);
-  const doctor = getSavedDoctorProfile(doctorsList.find((d) => d.id === id));
+  const doctor = useMemo(
+    () => getSavedDoctorProfile(doctorsList.find((d) => d.id === id)),
+    [id]
+  );
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [chatStage, setChatStage] = useState(0);
   const [showEndModal, setShowEndModal] = useState(false);
+  const [generatedSessionId] = useState(() => Date.now());
+  const [activeSessionId, setActiveSessionId] = useState(null);
+  const [isCompletedSession, setIsCompletedSession] = useState(false);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
+  const endingSessionRef = useRef(false);
 
   useEffect(() => {
     if (!doctor) return;
 
-    const stored = readStorageList("riwayat");
-    const filtered = stored.filter((r) => r.doctorId !== id);
-    const newEntry = {
-      id: Date.now(),
-      doctorId: id,
-      doctorName: doctor.name,
-      initials: doctor.initials,
-      specialty: doctor.specialty,
-      status: "Berlangsung",
-      date: new Date().toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }),
-      chatId: id,
-    };
-    localStorage.setItem("riwayat", JSON.stringify([newEntry, ...filtered]));
+    const ongoing = readUserHistory(user.id, "ongoing");
+    const scheduled = readUserHistory(user.id, "scheduled");
+    const completed = readUserHistory(user.id, "completed");
+    const sameRequestedSession = (entry) =>
+      String(entry.id) === requestedSessionId && Number(entry.doctorId) === id;
+    const existingCompleted = requestedSessionId
+      ? completed.find(sameRequestedSession)
+      : null;
+    const existingOngoing = requestedSessionId
+      ? ongoing.find(sameRequestedSession)
+      : null;
+    const existingScheduled = requestedSessionId
+      ? scheduled.find(sameRequestedSession)
+      : null;
+    const sessionId =
+      existingCompleted?.id ??
+      existingOngoing?.id ??
+      existingScheduled?.id ??
+      generatedSessionId;
+    const sameSession = (entry) =>
+      String(entry.id) === String(sessionId) && Number(entry.doctorId) === id;
+
+    if (existingCompleted) {
+      setActiveSessionId(existingCompleted.id);
+      setIsCompletedSession(true);
+      setMessages([
+        {
+          id: existingCompleted.id,
+          from: "doctor",
+          text: existingCompleted.summary || "Konsultasi ini telah selesai.",
+          time: "",
+        },
+      ]);
+      setIsTyping(false);
+      return;
+    } else if (existingOngoing) {
+      setActiveSessionId(existingOngoing.id);
+      setIsCompletedSession(false);
+    } else if (existingScheduled) {
+      const activeEntry = { ...existingScheduled, status: "Berlangsung" };
+      writeUserHistory(
+        user.id,
+        "ongoing",
+        [activeEntry, ...ongoing.filter((entry) => !sameSession(entry))]
+      );
+      setActiveSessionId(existingScheduled.id);
+      setIsCompletedSession(false);
+    } else {
+      const newEntry = {
+        id: sessionId,
+        doctorId: id,
+        doctorName: doctor.name,
+        initials: doctor.initials,
+        specialty: doctor.specialty,
+        status: "Berlangsung",
+        date: new Date().toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+        chatId: sessionId,
+      };
+      writeUserHistory(
+        user.id,
+        "ongoing",
+        [newEntry, ...ongoing.filter((entry) => !sameSession(entry))]
+      );
+      setActiveSessionId(sessionId);
+      setIsCompletedSession(false);
+    }
 
     const openings = {
       "Dokter Umum": `Halo! Saya ${doctor.name}. Silakan ceritakan keluhan kesehatan Anda, atau pilih salah satu keluhan umum di bawah ini ya.`,
@@ -181,7 +235,7 @@ function Chat() {
     }, 450);
 
     return () => clearTimeout(timer);
-  }, [id, doctor]);
+  }, [id, doctor, generatedSessionId, requestedSessionId, user.id]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -250,78 +304,84 @@ function Chat() {
   }
 
   function handleEndConsultation() {
+    if (
+      activeSessionId === null ||
+      isCompletedSession ||
+      endingSessionRef.current
+    ) {
+      return;
+    }
+    endingSessionRef.current = true;
+
     const lastUserMsg = [...messages].reverse().find((m) => m.from === "user")?.text;
     const summaryText = lastUserMsg
       ? `Keluhan: "${lastUserMsg.slice(0, 80)}${lastUserMsg.length > 80 ? "..." : ""}". Sesi konsultasi selesai.`
       : `Konsultasi telah selesai bersama ${doctor.name}.`;
 
-    const stored = readStorageList("riwayat");
-    const updatedOngoing = stored.filter((r) => r.doctorId !== id);
-    localStorage.setItem("riwayat", JSON.stringify(updatedOngoing));
+    const stored = readUserHistory(user.id, "ongoing");
+    const matchesSession = (entry) =>
+      String(entry.id) === String(activeSessionId) &&
+      Number(entry.doctorId) === id;
+    const activeEntry = stored.find(matchesSession);
+    const updatedOngoing = stored.filter((entry) => !matchesSession(entry));
+    writeUserHistory(user.id, "ongoing", updatedOngoing);
 
-    const storedScheduled = readStorageList("riwayat_terjadwal");
-    const updatedScheduled = storedScheduled.filter((s) => s.doctorId !== id);
-    localStorage.setItem("riwayat_terjadwal", JSON.stringify(updatedScheduled));
+    const storedScheduled = readUserHistory(user.id, "scheduled");
+    const scheduledEntry = storedScheduled.find(matchesSession);
+    const updatedScheduled = storedScheduled.filter((entry) => !matchesSession(entry));
+    writeUserHistory(user.id, "scheduled", updatedScheduled);
+    const sourceEntry = activeEntry || scheduledEntry;
+    const complaintSummary = sourceEntry?.complaint
+      ? `Keluhan: "${sourceEntry.complaint.slice(0, 80)}${sourceEntry.complaint.length > 80 ? "..." : ""}". Sesi konsultasi selesai.`
+      : summaryText;
 
-    const storedDone = (() => {
-      try {
-        const value = localStorage.getItem("riwayat_selesai");
-        return value === null ? null : JSON.parse(value);
-      } catch {
-        return null;
-      }
-    })();
-    const baseDone =
-      storedDone !== null
-        ? storedDone
-        : [
-            {
-              id: 201,
-              doctorId: 6,
-              doctorName: "Dr. Kevin Wijaya",
-              initials: "KW",
-              specialty: "Dokter Umum",
-              status: "Selesai",
-              date: "10 Oktober 2026",
-              summary:
-                "Pasien didiagnosa ISPA ringan. Diresepkan antibiotik 5 hari.",
-              chatId: 6,
-            },
-            {
-              id: 202,
-              doctorId: 4,
-              doctorName: "Dr. Rina Lestari",
-              initials: "RL",
-              specialty: "Dokter Kulit",
-              status: "Selesai",
-              date: "3 Oktober 2026",
-              summary:
-                "Konsultasi kulit sensitif. Disarankan pemakaian pelembap non-fragrance.",
-              chatId: 4,
-            },
-          ];
+    const baseDone = readUserHistory(user.id, "completed", [
+      {
+        id: 201,
+        doctorId: 6,
+        doctorName: "Dr. Kevin Wijaya",
+        initials: "KW",
+        specialty: "Dokter Umum",
+        status: "Selesai",
+        date: "10 Oktober 2026",
+        summary: "Pasien didiagnosa ISPA ringan. Diresepkan antibiotik 5 hari.",
+        chatId: 6,
+      },
+      {
+        id: 202,
+        doctorId: 4,
+        doctorName: "Dr. Rina Lestari",
+        initials: "RL",
+        specialty: "Dokter Kulit",
+        status: "Selesai",
+        date: "3 Oktober 2026",
+        summary: "Konsultasi kulit sensitif. Disarankan pemakaian pelembap non-fragrance.",
+        chatId: 4,
+      },
+    ]);
 
     const newDone = {
-      id: Date.now(),
+      id: activeSessionId,
       doctorId: doctor.id,
       doctorName: doctor.name,
       initials: doctor.initials,
       specialty: doctor.specialty,
       status: "Selesai",
-      date: new Date().toLocaleDateString("id-ID", {
+      date: sourceEntry?.date || new Date().toLocaleDateString("id-ID", {
         day: "numeric",
         month: "long",
         year: "numeric",
       }),
-      summary: summaryText,
-      chatId: doctor.id,
+      summary: lastUserMsg ? summaryText : complaintSummary,
+      chatId: activeSessionId,
     };
 
     const updatedDone = [
       newDone,
-      ...baseDone.filter((d) => d.doctorId !== doctor.id),
+      ...baseDone.filter((entry) => !matchesSession(entry)),
     ];
-    localStorage.setItem("riwayat_selesai", JSON.stringify(updatedDone));
+    writeUserHistory(user.id, "completed", updatedDone);
+    incrementConsultations();
 
     setShowEndModal(false);
     navigate("/riwayat", { state: { tab: "Selesai" } });
@@ -359,8 +419,9 @@ function Chat() {
             type="button"
             className={styles.endChatBtn}
             onClick={() => setShowEndModal(true)}
+            disabled={isCompletedSession}
           >
-            Akhiri Konsultasi
+            {isCompletedSession ? "Konsultasi Selesai" : "Akhiri Konsultasi"}
           </button>
         </div>
       </header>
@@ -423,7 +484,7 @@ function Chat() {
                 key={i}
                 type="button"
                 className={styles.quickChip}
-                disabled={isTyping}
+                disabled={isTyping || isCompletedSession}
                 onClick={() => handleSendText(opt)}
               >
                 {opt}
@@ -438,16 +499,20 @@ function Chat() {
           ref={inputRef}
           type="text"
           className={styles.msgInput}
-          placeholder="Tulis pesan atau pilih tombol di atas..."
+          placeholder={
+            isCompletedSession
+              ? "Konsultasi ini telah selesai."
+              : "Tulis pesan atau pilih tombol di atas..."
+          }
           value={input}
           onChange={(e) => setInput(e.target.value)}
           autoComplete="off"
-          disabled={isTyping}
+          disabled={isTyping || isCompletedSession}
         />
         <button
           type="submit"
           className={styles.sendBtn}
-          disabled={!input.trim() || isTyping}
+          disabled={!input.trim() || isTyping || isCompletedSession}
           aria-label="Kirim Pesan"
         >
           <Send size={18} />

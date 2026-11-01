@@ -98,25 +98,6 @@ function DoctorDetail() {
               <Link
                 to={`/konsultasi/${doctor.id}`}
                 className={styles.chatButton}
-                onClick={() => {
-                  const stored = JSON.parse(localStorage.getItem("riwayat") || "[]");
-                  const filtered = stored.filter((r) => r.doctorId !== doctor.id);
-                  const newEntry = {
-                    id: Date.now(),
-                    doctorId: doctor.id,
-                    doctorName: doctor.name,
-                    initials: doctor.initials,
-                    specialty: doctor.specialty,
-                    status: "Berlangsung",
-                    date: new Date().toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    }),
-                    chatId: doctor.id,
-                  };
-                  localStorage.setItem("riwayat", JSON.stringify([newEntry, ...filtered]));
-                }}
               >
                 Konsultasi
               </Link>

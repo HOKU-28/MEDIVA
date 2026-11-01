@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { MessageCircle, Calendar, CheckCircle, Trash2, X } from "lucide-react";
+import { useAuth } from "../../Context/AuthContext";
 import { getDoctorById } from "../../data/doctorData";
+import { readUserHistory, writeUserHistory } from "../../utils/userHistory";
 import styles from "./History.module.css";
 
 const TABS = ["Berlangsung", "Terjadwal", "Selesai"];
@@ -58,12 +60,13 @@ const initialDone = [
 
 function History() {
   const location = useLocation();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(
     location.state?.tab || "Berlangsung"
   );
   const [ongoing, setOngoing] = useState([]);
-  const [scheduled, setScheduled] = useState(initialScheduled);
-  const [done, setDone] = useState(initialDone);
+  const [scheduled, setScheduled] = useState([]);
+  const [done, setDone] = useState([]);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
@@ -74,37 +77,56 @@ function History() {
 
   useEffect(() => {
     const load = () => {
-      const stored = JSON.parse(localStorage.getItem("riwayat") || "[]");
-      setOngoing(stored);
+      const isDemoCustomer = user.id === "demo-customer";
+      const storedOngoing = readUserHistory(user.id, "ongoing");
+      const scheduledEntries = readUserHistory(
+        user.id,
+        "scheduled",
+        isDemoCustomer ? initialScheduled : []
+      );
+      const doneEntries = readUserHistory(
+        user.id,
+        "completed",
+        isDemoCustomer ? initialDone : []
+      );
+      const isSameSession = (left, right) =>
+        String(left.id) === String(right.id) &&
+        Number(left.doctorId) === Number(right.doctorId);
+      const activeScheduled = scheduledEntries.filter(
+        (item) => !doneEntries.some((completed) => isSameSession(item, completed))
+      );
+      const ongoingEntries = [...storedOngoing];
 
-      const storedScheduled = JSON.parse(
-        localStorage.getItem("riwayat_terjadwal") || "null"
-      );
-      if (storedScheduled !== null) {
-        setScheduled(storedScheduled);
-      } else {
-        setScheduled(initialScheduled);
-        localStorage.setItem(
-          "riwayat_terjadwal",
-          JSON.stringify(initialScheduled)
-        );
-      }
-      const storedDone = JSON.parse(
-        localStorage.getItem("riwayat_selesai") || "null"
-      );
-      if (storedDone !== null) {
-        setDone(storedDone);
-      } else {
-        setDone(initialDone);
-        localStorage.setItem("riwayat_selesai", JSON.stringify(initialDone));
-      }
+      activeScheduled.forEach((item) => {
+        if (!ongoingEntries.some((ongoingItem) => isSameSession(item, ongoingItem))) {
+          ongoingEntries.push({ ...item, status: "Berlangsung" });
+        }
+      });
+
+      setOngoing(ongoingEntries);
+      setScheduled(activeScheduled);
+      setDone(doneEntries);
+
+      const persistIfChanged = (list, previousEntries, nextEntries) => {
+        const key = `mediva_${list}_${user.id}`;
+        if (
+          localStorage.getItem(key) === null ||
+          JSON.stringify(previousEntries) !== JSON.stringify(nextEntries)
+        ) {
+          writeUserHistory(user.id, list, nextEntries);
+        }
+      };
+
+      persistIfChanged("scheduled", scheduledEntries, activeScheduled);
+      persistIfChanged("ongoing", storedOngoing, ongoingEntries);
+      persistIfChanged("completed", doneEntries, doneEntries);
     };
 
     load();
 
     window.addEventListener("storage", load);
     return () => window.removeEventListener("storage", load);
-  }, [activeTab]);
+  }, [activeTab, user.id]);
 
   function askDelete(id, type) {
     setDeleteTarget({ id, type });
@@ -116,16 +138,22 @@ function History() {
 
     if (type === "ongoing") {
       const updated = ongoing.filter((item) => item.id !== id);
+      const updatedScheduled = scheduled.filter((item) => item.id !== id);
       setOngoing(updated);
-      localStorage.setItem("riwayat", JSON.stringify(updated));
+      setScheduled(updatedScheduled);
+      writeUserHistory(user.id, "ongoing", updated);
+      writeUserHistory(user.id, "scheduled", updatedScheduled);
     } else if (type === "scheduled") {
       const updated = scheduled.filter((item) => item.id !== id);
+      const updatedOngoing = ongoing.filter((item) => item.id !== id);
       setScheduled(updated);
-      localStorage.setItem("riwayat_terjadwal", JSON.stringify(updated));
+      setOngoing(updatedOngoing);
+      writeUserHistory(user.id, "scheduled", updated);
+      writeUserHistory(user.id, "ongoing", updatedOngoing);
     } else if (type === "done") {
       const updated = done.filter((item) => item.id !== id);
       setDone(updated);
-      localStorage.setItem("riwayat_selesai", JSON.stringify(updated));
+      writeUserHistory(user.id, "completed", updated);
     }
 
     setDeleteTarget(null);
@@ -162,7 +190,7 @@ function History() {
               Berlangsung
             </span>
             <Link
-              to={`/konsultasi/${item.chatId}`}
+              to={`/konsultasi/${item.doctorId}?sessionId=${item.id}`}
               className={styles.continueBtn}
             >
               <MessageCircle size={15} />
@@ -212,7 +240,7 @@ function History() {
               Terjadwal
             </span>
             <Link
-              to={`/konsultasi/${item.chatId}`}
+              to={`/konsultasi/${item.doctorId}?sessionId=${item.id}`}
               className={styles.continueBtn}
             >
               <MessageCircle size={15} />
@@ -265,7 +293,7 @@ function History() {
               Selesai
             </span>
             <Link
-              to={`/konsultasi/${item.chatId}`}
+              to={`/konsultasi/${item.doctorId}?sessionId=${item.id}`}
               className={styles.detailBtn}
             >
               Lihat Detail

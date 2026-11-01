@@ -263,7 +263,7 @@ export default function SettingsModal({
                     onClick={() => togglePasswordVisibility("currentPassword")}
                     aria-label={visiblePasswords.currentPassword ? "Sembunyikan password saat ini" : "Lihat password saat ini"}
                   >
-                    {visiblePasswords.currentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {visiblePasswords.currentPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
                 </div>
               </div>
@@ -290,7 +290,7 @@ export default function SettingsModal({
                     onClick={() => togglePasswordVisibility("newPassword")}
                     aria-label={visiblePasswords.newPassword ? "Sembunyikan password baru" : "Lihat password baru"}
                   >
-                    {visiblePasswords.newPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {visiblePasswords.newPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
                 </div>
               </div>
@@ -317,7 +317,7 @@ export default function SettingsModal({
                     onClick={() => togglePasswordVisibility("confirmPassword")}
                     aria-label={visiblePasswords.confirmPassword ? "Sembunyikan konfirmasi password" : "Lihat konfirmasi password"}
                   >
-                    {visiblePasswords.confirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {visiblePasswords.confirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
                 </div>
               </div>
