@@ -1,0 +1,526 @@
+.chatPage {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--color-bg-page);
+}
+
+.chatHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 24px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: var(--color-text-body);
+  cursor: pointer;
+  transition: background 0.18s;
+  flex-shrink: 0;
+}
+
+.backBtn:hover {
+  background: #e2e8f0;
+}
+
+.doctorInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-weight: 700;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.doctorInfo strong {
+  display: block;
+  color: var(--color-text-title);
+  font-size: 1rem;
+}
+
+.doctorInfo span {
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.onlineWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success);
+}
+
+.statusText {
+  color: var(--color-success);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.endChatBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.endChatBtn:hover {
+  background: var(--color-error);
+  color: #ffffff;
+  border-color: var(--color-error);
+}
+
+.statusBar {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 7px 16px;
+  flex-wrap: wrap;
+}
+
+.statusBadge {
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.aiActiveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 10px;
+  border-radius: 12px;
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid rgba(22, 119, 168, 0.2);
+  letter-spacing: 0.2px;
+}
+
+.advisoryBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 5%;
+  background: var(--color-warning-bg);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+  color: var(--color-warning-text);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.advisoryIcon {
+  color: var(--color-warning);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.advisoryBanner p {
+  margin: 0;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 5%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.msgRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.msgUser {
+  flex-direction: row-reverse;
+}
+
+.msgAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.msgBubble {
+  max-width: 60%;
+  padding: 12px 16px;
+  border-radius: 18px;
+}
+
+.msgDoctor .msgBubble {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-bottom-left-radius: 4px;
+}
+
+.msgUser .msgBubble {
+  background: var(--color-primary);
+  border-bottom-right-radius: 4px;
+}
+
+.msgDoctor .msgBubble p {
+  color: var(--color-text-title);
+}
+
+.msgUser .msgBubble p {
+  color: #ffffff;
+}
+
+.msgBubble p {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.msgFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.aiTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border: 1px solid rgba(22, 119, 168, 0.2);
+  padding: 1px 6px;
+  border-radius: 6px;
+}
+
+.msgTime {
+  font-size: 0.72rem;
+  display: block;
+}
+
+.msgDoctor .msgTime {
+  color: var(--color-text-muted);
+}
+
+.msgUser .msgTime {
+  color: rgba(255, 255, 255, 0.7);
+  text-align: right;
+}
+
+.typingBubble {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 14px 18px;
+  min-width: 60px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+.quickBar {
+  padding: 8px 16px;
+  background: #f1f8fc;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quickLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.quickScroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0;
+  flex: 1;
+}
+
+.quickScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.quickChip {
+  background: var(--color-surface);
+  color: var(--color-text-title);
+  border: 1.5px solid rgba(22, 119, 168, 0.3);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.quickChip:hover:not(:disabled) {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(22, 119, 168, 0.2);
+}
+
+.quickChip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.inputArea {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 5%;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+
+.msgInput {
+  flex: 1;
+  height: 46px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  background: var(--color-bg-page);
+  color: var(--color-text-body);
+  font-family: inherit;
+  font-size: 0.93rem;
+  outline: none;
+  transition: border-color 0.18s;
+}
+
+.msgInput:focus {
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.sendBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #ffffff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.18s;
+}
+
+.sendBtn:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.sendBtn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+.modalCard {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  max-width: 420px;
+  width: 100%;
+  padding: 28px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-modal);
+  animation: scaleUp 0.2s ease;
+}
+
+.modalIcon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.modalCard h3 {
+  color: var(--color-text-title);
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.modalCard p {
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.cancelBtn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.cancelBtn:hover {
+  background: #f1f5f9;
+}
+
+.confirmEndBtn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.confirmEndBtn:hover {
+  background: var(--color-primary-hover);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 600px) {
+  .msgBubble {
+    max-width: 80%;
+  }
+
+  .endChatBtn {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+}
