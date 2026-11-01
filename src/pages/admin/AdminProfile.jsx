@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Pencil } from "lucide-react";
 import { useAuth } from "../../Context/AuthContext";
 import ProfilePhotoUpload from "../../components/ProfilePhotoUpload";
 import styles from "./AdminProfile.module.css";
@@ -19,6 +19,7 @@ export default function AdminProfile() {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [editing, setEditing] = useState(false);
 
   const initials = form.name
     .split(" ")
@@ -60,9 +61,31 @@ export default function AdminProfile() {
         phone: normalizeIndonesianPhone(form.phone),
       }));
       setSuccess("Profil admin berhasil diperbarui.");
+      setEditing(false);
     } catch (submitError) {
       setError(submitError.message || "Gagal memperbarui profil admin.");
     }
+  }
+
+  function startEdit() {
+    setForm({
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: sanitizePhoneInput(user?.phone || "+6282288889988"),
+    });
+    setError("");
+    setSuccess("");
+    setEditing(true);
+  }
+
+  function cancelEdit() {
+    setForm({
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: sanitizePhoneInput(user?.phone || "+6282288889988"),
+    });
+    setError("");
+    setEditing(false);
   }
 
   return (
@@ -83,7 +106,21 @@ export default function AdminProfile() {
           />
         </div>
 
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <div className={styles.profileDetails}>
+          <div className={styles.cardHead}>
+            <h2>Informasi Admin</h2>
+            {!editing && (
+              <button
+                type="button"
+                className={styles.editButton}
+                onClick={startEdit}
+              >
+                <Pencil size={15} />
+                Edit Profil
+              </button>
+            )}
+          </div>
+
           {error && (
             <div className={styles.error} role="alert">
               <AlertCircle size={17} />
@@ -97,50 +134,78 @@ export default function AdminProfile() {
             </div>
           )}
 
-          <label className={styles.field}>
-            <span>Nama Lengkap</span>
-            <input
-              name="name"
-              type="text"
-              autoComplete="name"
-              value={form.name}
-              onChange={handleChange}
-              maxLength={100}
-              required
-            />
-          </label>
+          {editing ? (
+            <form className={styles.form} onSubmit={handleSubmit}>
+              <label className={styles.field}>
+                <span>Nama Lengkap</span>
+                <input
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  maxLength={100}
+                  required
+                />
+              </label>
 
-          <label className={styles.field}>
-            <span>Email</span>
-            <input
-              name="email"
-              type="email"
-              autoComplete="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-          </label>
+              <label className={styles.field}>
+                <span>Email</span>
+                <input
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
 
-          <label className={styles.field}>
-            <span>Nomor Telepon</span>
-            <input
-              name="phone"
-              type="text"
-              inputMode="tel"
-              maxLength={20}
-              autoComplete="tel"
-              placeholder="08... atau +62... (tanda hubung boleh)"
-              value={form.phone}
-              onChange={handleChange}
-            />
-            <small>Tanpa spasi, minimal 12 angka. Tanda hubung boleh; awalan kode negara +62.</small>
-          </label>
+              <label className={styles.field}>
+                <span>Nomor Telepon</span>
+                <input
+                  name="phone"
+                  type="text"
+                  inputMode="tel"
+                  maxLength={20}
+                  autoComplete="tel"
+                  placeholder="08... atau +62... (tanda hubung boleh)"
+                  value={form.phone}
+                  onChange={handleChange}
+                />
+                <small>Tanpa spasi, minimal 12 angka. Tanda hubung boleh; awalan kode negara +62.</small>
+              </label>
 
-          <button type="submit" className={styles.saveButton}>
-            Simpan Perubahan
-          </button>
-        </form>
+              <div className={styles.actions}>
+                <button type="submit" className={styles.saveButton}>
+                  Simpan
+                </button>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={cancelEdit}
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className={styles.infoGrid}>
+              <div className={styles.info}>
+                <span>Nama Lengkap</span>
+                <strong>{user?.name || "—"}</strong>
+              </div>
+              <div className={styles.info}>
+                <span>Email</span>
+                <strong>{user?.email || "—"}</strong>
+              </div>
+              <div className={styles.info}>
+                <span>Nomor Telepon</span>
+                <strong>{user?.phone || "—"}</strong>
+              </div>
+            </div>
+          )}
+        </div>
       </section>
     </main>
   );

@@ -2,19 +2,26 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { TriangleAlert, CheckCircle } from "lucide-react";
 import { useAuth } from "../../Context/AuthContext";
-import { doctorsList, getSavedDoctorProfile } from "../../data/doctorData";
+import {
+  doctorsList,
+  getSavedDoctorProfile,
+  todayISO,
+} from "../../data/doctorData";
+import { readUserHistory, writeUserHistory } from "../../utils/userHistory";
 import styles from "./Booking.module.css";
 
 const timeSlots = ["09.00", "10.00", "11.00", "13.00", "14.00"];
 
 function Booking() {
   const { id } = useParams();
-  const { incrementConsultations } = useAuth();
+  const { user } = useAuth();
 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [complaint, setComplaint] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submittedBookingId, setSubmittedBookingId] = useState(null);
+  const [formError, setFormError] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -36,55 +43,60 @@ function Booking() {
   function handleSubmit(event) {
     event.preventDefault();
 
-    if (date && time) {
-      incrementConsultations();
-
-      const formattedDate = new Date(date).toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
-
-      const stored = JSON.parse(localStorage.getItem("riwayat") || "[]");
-      const filtered = stored.filter((r) => r.doctorId !== doctor.id);
-      const newEntry = {
-        id: Date.now(),
-        doctorId: doctor.id,
-        doctorName: doctor.name,
-        initials: doctor.initials,
-        specialty: doctor.specialty,
-        status: "Berlangsung",
-        date: formattedDate || date,
-        time: `${time} WIB`,
-        complaint: complaint,
-        chatId: doctor.id,
-      };
-      localStorage.setItem("riwayat", JSON.stringify([newEntry, ...filtered]));
-
-      const storedScheduled = JSON.parse(
-        localStorage.getItem("riwayat_terjadwal") || "[]"
-      );
-      const filteredScheduled = storedScheduled.filter(
-        (s) => s.doctorId !== doctor.id
-      );
-      const newScheduled = {
-        id: Date.now() + 1,
-        doctorId: doctor.id,
-        doctorName: doctor.name,
-        initials: doctor.initials,
-        specialty: doctor.specialty,
-        status: "Terjadwal",
-        date: formattedDate || date,
-        time: `${time} WIB`,
-        chatId: doctor.id,
-      };
-      localStorage.setItem(
-        "riwayat_terjadwal",
-        JSON.stringify([newScheduled, ...filteredScheduled])
-      );
-
-      setSubmitted(true);
+    if (!date) {
+      setFormError("Tanggal konsultasi wajib dipilih.");
+      return;
     }
+
+    if (date < todayISO) {
+      setFormError("Tanggal konsultasi tidak boleh sudah lewat.");
+      return;
+    }
+
+    if (!time) {
+      setFormError("Silakan pilih waktu konsultasi.");
+      return;
+    }
+    setFormError("");
+
+    const formattedDate = new Date(`${date}T00:00:00`).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+
+    const storedScheduled = readUserHistory(user.id, "scheduled");
+    const bookingId = Date.now();
+    const newOngoing = {
+      id: bookingId,
+      doctorId: doctor.id,
+      doctorName: doctor.name,
+      initials: doctor.initials,
+      specialty: doctor.specialty,
+      status: "Berlangsung",
+      date: formattedDate,
+      time: `${time} WIB`,
+      complaint,
+      chatId: bookingId,
+    };
+    const newScheduled = {
+      id: bookingId,
+      doctorId: doctor.id,
+      doctorName: doctor.name,
+      initials: doctor.initials,
+      specialty: doctor.specialty,
+      status: "Terjadwal",
+      date: formattedDate,
+      time: `${time} WIB`,
+      complaint,
+      chatId: bookingId,
+    };
+    writeUserHistory(user.id, "scheduled", [newScheduled, ...storedScheduled]);
+    const storedOngoing = readUserHistory(user.id, "ongoing");
+    writeUserHistory(user.id, "ongoing", [newOngoing, ...storedOngoing]);
+
+    setSubmittedBookingId(bookingId);
+    setSubmitted(true);
   }
 
   if (submitted) {
@@ -123,17 +135,18 @@ function Booking() {
 
           <div className={styles.successActions}>
             <Link
-              to={`/konsultasi/${doctor.id}`}
+              to={`/konsultasi/${doctor.id}?sessionId=${submittedBookingId}`}
               className={styles.chatButton}
             >
-              Mulai Konsultasi
+              Chat dengan Dokter
             </Link>
 
             <Link
               to="/riwayat"
+              state={{ tab: "Terjadwal" }}
               className={styles.historyButton}
             >
-              Lihat di Riwayat
+              Lihat Janji
             </Link>
 
             <Link to="/dokter" className={styles.backButton}>
@@ -188,22 +201,40 @@ function Booking() {
             <h2>Pilih Jadwal</h2>
           </div>
 
+          {formError && (
+            <p className={styles.validationError} role="alert">
+              {formError}
+            </p>
+          )}
+
           <div className={styles.field}>
             <label htmlFor="date">Tanggal Konsultasi</label>
 
             <input
               id="date"
               type="date"
+              min={todayISO}
               value={date}
-              onChange={(event) => setDate(event.target.value)}
-              required
+              aria-invalid={Boolean(formError && (!date || date < todayISO))}
+              onChange={(event) => {
+                setDate(event.target.value);
+                setFormError("");
+              }}
             />
           </div>
 
           <div className={styles.field}>
-            <label>Waktu Konsultasi</label>
+            <span id="time-label" className={styles.fieldLabel}>
+              Waktu Konsultasi
+            </span>
 
-            <div className={styles.timeGrid}>
+            <div
+              className={styles.timeGrid}
+              role="group"
+              aria-labelledby="time-label"
+              aria-required="true"
+              aria-invalid={Boolean(formError && !time)}
+            >
               {timeSlots.map((slot) => (
                 <button
                   type="button"
@@ -213,7 +244,11 @@ function Booking() {
                       ? `${styles.timeButton} ${styles.selected}`
                       : styles.timeButton
                   }
-                  onClick={() => setTime(slot)}
+                  aria-pressed={time === slot}
+                  onClick={() => {
+                    setTime(slot);
+                    setFormError("");
+                  }}
                 >
                   {slot}
                 </button>

@@ -168,7 +168,7 @@ export default function Register() {
                                 onClick={() => togglePasswordVisibility("password")}
                                 aria-label={visiblePasswords.password ? "Sembunyikan password" : "Lihat password"}
                             >
-                                {visiblePasswords.password ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {visiblePasswords.password ? <Eye size={18} /> : <EyeOff size={18} />}
                             </button>
                         </div>
                     </div>
@@ -196,7 +196,7 @@ export default function Register() {
                                 onClick={() => togglePasswordVisibility("confirmPassword")}
                                 aria-label={visiblePasswords.confirmPassword ? "Sembunyikan konfirmasi password" : "Lihat konfirmasi password"}
                             >
-                                {visiblePasswords.confirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {visiblePasswords.confirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                             </button>
                         </div>
                     </div>

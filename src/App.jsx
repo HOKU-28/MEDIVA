@@ -28,6 +28,7 @@ import AdminDoctors from "./pages/admin/AdminDoctors";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminServices from "./pages/admin/AdminServices";
 import AdminProfile from "./pages/admin/AdminProfile";
+import NotFound from "./pages/NotFound";
 
 function CustomerShell() {
   return (
@@ -99,6 +100,8 @@ function App() {
                 <Route path="profil" element={<AdminProfile />} />
               </Route>
             </Route>
+
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </AppointmentProvider>

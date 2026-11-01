@@ -183,7 +183,7 @@ export default function Login() {
                                 onClick={() => setShowPassword((visible) => !visible)}
                                 aria-label={showPassword ? "Sembunyikan password" : "Lihat password"}
                             >
-                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                             </button>
                         </div>
                     </div>
