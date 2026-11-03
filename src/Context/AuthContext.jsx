@@ -12,6 +12,21 @@ const AuthContext = createContext(null);
 
 const USERS_KEY = "mediva_demo_users";
 const SESSION_KEY = "mediva_demo_session";
+const DEMO_CUSTOMER_INITIAL_CONSULTATIONS = 4;
+
+function normalizeDemoCustomerConsultations(account) {
+    if (
+        account?.id !== "demo-customer" ||
+        Number(account.totalConsultations) >= DEMO_CUSTOMER_INITIAL_CONSULTATIONS
+    ) {
+        return account;
+    }
+
+    return {
+        ...account,
+        totalConsultations: DEMO_CUSTOMER_INITIAL_CONSULTATIONS,
+    };
+}
 
 const demoUsers = [
     {
@@ -25,7 +40,7 @@ const demoUsers = [
         address: "Jl. Merdeka No. 12, Jakarta Selatan",
         dob: "1995-08-15",
         bloodType: "O+",
-        totalConsultations: 3,
+        totalConsultations: DEMO_CUSTOMER_INITIAL_CONSULTATIONS,
     },
     {
         id: "demo-admin",
@@ -54,7 +69,11 @@ function readUsers() {
             const parsed = JSON.parse(saved);
 
             if (Array.isArray(parsed)) {
-                return parsed;
+                const normalized = parsed.map(normalizeDemoCustomerConsultations);
+                if (normalized.some((account, index) => account !== parsed[index])) {
+                    localStorage.setItem(USERS_KEY, JSON.stringify(normalized));
+                }
+                return normalized;
             }
         }
     } catch {
@@ -66,7 +85,14 @@ function readUsers() {
 function readSession() {
     try {
         const saved = localStorage.getItem(SESSION_KEY);
-        return saved ? JSON.parse(saved) : null;
+        if (!saved) return null;
+
+        const session = JSON.parse(saved);
+        const normalized = normalizeDemoCustomerConsultations(session);
+        if (normalized !== session) {
+            localStorage.setItem(SESSION_KEY, JSON.stringify(normalized));
+        }
+        return normalized;
     } catch {
         return null;
     }
@@ -101,6 +127,13 @@ export function AuthProvider({ children }) {
 
         if (!cleanName || !cleanEmail || !password) {
             throw new Error("Semua kolom wajib diisi.");
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(cleanEmail)) {
+            throw new Error(
+                "Format email belum benar. Gunakan format nama@domain.com, misalnya nama@contoh.id"
+            );
         }
 
         const allUsers = [...demoUsers, ...registeredUsers];
@@ -333,15 +366,20 @@ export function AuthProvider({ children }) {
             throw new Error("Tidak ada sesi pasien yang aktif.");
         }
 
-        const allUsers = [...demoUsers, ...registeredUsers];
-        const account = allUsers.find((item) => item.id === user.id);
+        const account =
+            registeredUsers.find((item) => item.id === user.id) ||
+            demoUsers.find((item) => item.id === user.id);
         if (!account) {
             throw new Error("Akun pengguna tidak ditemukan.");
         }
 
         const updatedAccount = {
             ...account,
-            totalConsultations: (Number(account.totalConsultations) || 0) + 1,
+            totalConsultations:
+                Math.max(
+                    Number(account.totalConsultations) || 0,
+                    Number(user.totalConsultations) || 0
+                ) + 1,
         };
         const updatedUsers = registeredUsers.some((item) => item.id === user.id)
             ? registeredUsers.map((item) =>

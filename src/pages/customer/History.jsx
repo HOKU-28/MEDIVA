@@ -6,7 +6,7 @@ import { getDoctorById } from "../../data/doctorData";
 import { readUserHistory, writeUserHistory } from "../../utils/userHistory";
 import styles from "./History.module.css";
 
-const TABS = ["Berlangsung", "Terjadwal", "Selesai"];
+const TABS = ["Terjadwal", "Berlangsung", "Selesai"];
 
 const initialScheduled = [
   {
@@ -62,7 +62,7 @@ function History() {
   const location = useLocation();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(
-    location.state?.tab || "Berlangsung"
+    location.state?.tab || "Terjadwal"
   );
   const [ongoing, setOngoing] = useState([]);
   const [scheduled, setScheduled] = useState([]);
@@ -92,16 +92,12 @@ function History() {
       const isSameSession = (left, right) =>
         String(left.id) === String(right.id) &&
         Number(left.doctorId) === Number(right.doctorId);
-      const activeScheduled = scheduledEntries.filter(
-        (item) => !doneEntries.some((completed) => isSameSession(item, completed))
-      );
       const ongoingEntries = [...storedOngoing];
-
-      activeScheduled.forEach((item) => {
-        if (!ongoingEntries.some((ongoingItem) => isSameSession(item, ongoingItem))) {
-          ongoingEntries.push({ ...item, status: "Berlangsung" });
-        }
-      });
+      const activeScheduled = scheduledEntries.filter(
+        (item) =>
+          !doneEntries.some((completed) => isSameSession(item, completed)) &&
+          !ongoingEntries.some((ongoingItem) => isSameSession(item, ongoingItem))
+      );
 
       setOngoing(ongoingEntries);
       setScheduled(activeScheduled);
