@@ -53,8 +53,39 @@ export default function Register() {
         event.preventDefault();
         setError("");
 
+        const cleanName = form.name.trim();
+        const cleanEmail = form.email.trim().toLowerCase();
+
+        if (!cleanName) {
+            setError("Nama lengkap wajib diisi.");
+            return;
+        }
+
+        if (!cleanEmail) {
+            setError("Email wajib diisi.");
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(cleanEmail)) {
+            setError(
+                "Format email belum benar. Gunakan format nama@domain.com, misalnya nama@contoh.id"
+            );
+            return;
+        }
+
+        if (!form.password) {
+            setError("Password wajib diisi.");
+            return;
+        }
+
         if (form.password.length < 8) {
             setError("Password minimal 8 karakter.");
+            return;
+        }
+
+        if (!form.confirmPassword) {
+            setError("Konfirmasi password wajib diisi.");
             return;
         }
 
@@ -65,8 +96,8 @@ export default function Register() {
 
         try {
             register({
-                name: form.name,
-                email: form.email,
+                name: cleanName,
+                email: cleanEmail,
                 password: form.password,
             });
 
@@ -107,6 +138,7 @@ export default function Register() {
                 <form
                     className={styles.form}
                     onSubmit={handleSubmit}
+                    noValidate
                 >
                     <div className={styles.formGroup}>
                         <label htmlFor="register-name">

@@ -14,7 +14,7 @@ const timeSlots = ["09.00", "10.00", "11.00", "13.00", "14.00"];
 
 function Booking() {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { user, incrementConsultations } = useAuth();
 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -67,18 +67,6 @@ function Booking() {
 
     const storedScheduled = readUserHistory(user.id, "scheduled");
     const bookingId = Date.now();
-    const newOngoing = {
-      id: bookingId,
-      doctorId: doctor.id,
-      doctorName: doctor.name,
-      initials: doctor.initials,
-      specialty: doctor.specialty,
-      status: "Berlangsung",
-      date: formattedDate,
-      time: `${time} WIB`,
-      complaint,
-      chatId: bookingId,
-    };
     const newScheduled = {
       id: bookingId,
       doctorId: doctor.id,
@@ -92,8 +80,7 @@ function Booking() {
       chatId: bookingId,
     };
     writeUserHistory(user.id, "scheduled", [newScheduled, ...storedScheduled]);
-    const storedOngoing = readUserHistory(user.id, "ongoing");
-    writeUserHistory(user.id, "ongoing", [newOngoing, ...storedOngoing]);
+    incrementConsultations();
 
     setSubmittedBookingId(bookingId);
     setSubmitted(true);

@@ -4,7 +4,6 @@ import {
   KeyRound,
   Eye,
   EyeOff,
-  Bell,
   ShieldCheck,
   AlertCircle,
   CheckCircle2,
@@ -12,26 +11,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "../Context/AuthContext";
 import styles from "../pages/customer/Profile.module.css";
-
-const PREF_PREFIX = "mediva_preferences_";
-
-function readPreferences(userId) {
-  if (!userId) {
-    return { reminderConsultation: true, healthTips: true };
-  }
-  try {
-    const saved = localStorage.getItem(`${PREF_PREFIX}${userId}`);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return {
-        reminderConsultation: parsed.reminderConsultation ?? true,
-        healthTips: parsed.healthTips ?? true,
-      };
-    }
-  } catch {
-  }
-  return { reminderConsultation: true, healthTips: true };
-}
 
 export default function SettingsModal({
   isOpen,
@@ -51,11 +30,6 @@ export default function SettingsModal({
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [visiblePasswords, setVisiblePasswords] = useState({});
-
-  const [preferences, setPreferences] = useState(() =>
-    readPreferences(currentUser?.id)
-  );
-  const [prefNotice, setPrefNotice] = useState("");
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -137,24 +111,6 @@ export default function SettingsModal({
     }
   }
 
-  function handleTogglePref(key) {
-    if (!currentUser?.id) return;
-    const updated = {
-      ...preferences,
-      [key]: !preferences[key],
-    };
-    setPreferences(updated);
-    try {
-      localStorage.setItem(
-        `${PREF_PREFIX}${currentUser.id}`,
-        JSON.stringify(updated)
-      );
-      setPrefNotice("Preferensi berhasil disimpan secara lokal.");
-      setTimeout(() => setPrefNotice(""), 3000);
-    } catch {
-    }
-  }
-
   return (
     <div className={styles.overlay} onClick={() => !passwordLoading && onClose()}>
       <div
@@ -196,19 +152,6 @@ export default function SettingsModal({
           >
             <KeyRound size={16} />
             <span>Keamanan</span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === "notifikasi"}
-            className={`${styles.tabBtn} ${
-              activeTab === "notifikasi" ? styles.activeTab : ""
-            }`}
-            onClick={() => setActiveTab("notifikasi")}
-          >
-            <Bell size={16} />
-            <span>Notifikasi</span>
           </button>
 
           <button
@@ -344,77 +287,6 @@ export default function SettingsModal({
                 </button>
               </div>
             </form>
-          </div>
-        )}
-
-        {activeTab === "notifikasi" && (
-          <div className={styles.tabContent} role="tabpanel">
-            {prefNotice && (
-              <div className={styles.successAlert} role="status">
-                <CheckCircle2 size={16} />
-                <span>{prefNotice}</span>
-              </div>
-            )}
-
-            <div className={styles.prefList}>
-              <div className={styles.prefItem}>
-                <div className={styles.prefInfo}>
-                  <strong>Pengingat Jadwal Konsultasi</strong>
-                  <p>
-                    Kirim email pengingat sebelum jadwal konsultasi dokter dimulai.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={preferences.reminderConsultation}
-                  className={`${styles.toggleSwitch} ${
-                    preferences.reminderConsultation ? styles.toggleActive : ""
-                  }`}
-                  onClick={() => handleTogglePref("reminderConsultation")}
-                  aria-label="Toggle pengingat jadwal konsultasi"
-                >
-                  <span className={styles.toggleSlider} />
-                </button>
-              </div>
-
-              <div className={styles.prefItem}>
-                <div className={styles.prefInfo}>
-                  <strong>Tips & Artikel Kesehatan</strong>
-                  <p>
-                    Rekomendasi artikel kesehatan mingguan dan info pencegahan penyakit.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={preferences.healthTips}
-                  className={`${styles.toggleSwitch} ${
-                    preferences.healthTips ? styles.toggleActive : ""
-                  }`}
-                  onClick={() => handleTogglePref("healthTips")}
-                  aria-label="Toggle tips kesehatan"
-                >
-                  <span className={styles.toggleSlider} />
-                </button>
-              </div>
-            </div>
-
-            <div className={styles.infoNoteBox}>
-              <p>
-                <strong>Catatan Lokal:</strong> Preferensi ini disimpan secara lokal di peramban ini untuk akun Anda ({currentUser?.email}). Aplikasi prototipe ini tidak mengirimkan email sungguhan.
-              </p>
-            </div>
-
-            <div className={styles.modalActions} style={{ marginTop: 24 }}>
-              <button
-                type="button"
-                className={styles.cancelBtn}
-                onClick={onClose}
-              >
-                Tutup
-              </button>
-            </div>
           </div>
         )}
 

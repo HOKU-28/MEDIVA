@@ -80,7 +80,9 @@ export default function EditProfileModal({
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(cleanEmail)) {
-      setError("Format email tidak valid (contoh: nama@email.com).");
+      setError(
+        "Format email belum benar. Gunakan format nama@domain.com, misalnya nama@contoh.id."
+      );
       return;
     }
 
@@ -162,7 +164,7 @@ export default function EditProfileModal({
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className={styles.editForm}>
+        <form onSubmit={handleSubmit} className={styles.editForm} noValidate>
           <ProfilePhotoUpload
             src={form.avatar}
             name={form.name || "pasien"}

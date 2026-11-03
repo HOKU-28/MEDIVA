@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./AdminDoctors.module.css";
-import { Pencil, Trash2, Stethoscope } from "lucide-react";
+import { Pencil, Trash2, Stethoscope, Eye, EyeOff } from "lucide-react";
 import {
     getIndonesianPhoneError,
     normalizeIndonesianPhone,
@@ -110,6 +110,13 @@ function AdminDoctors() {
 
         return matchesSearch && matchesStatus;
     });
+
+    const activeDoctorCount = doctors.filter(
+        (doctor) => doctor.status === "Aktif"
+    ).length;
+    const inactiveDoctorCount = doctors.filter(
+        (doctor) => doctor.status === "Nonaktif"
+    ).length;
 
     function openAddModal() {
         setEditingId(null);
@@ -304,7 +311,7 @@ function AdminDoctors() {
                     </div>
                     <div>
                         <p className={styles.statLabel}>Total Dokter</p>
-                        <h2 className={styles.statValue}>3</h2>
+                        <h2 className={styles.statValue}>{doctors.length}</h2>
                         <p className={styles.statDescription}>Seluruh data dokter</p>
                     </div>
                 </div>
@@ -315,7 +322,7 @@ function AdminDoctors() {
                     </div>
                     <div>
                         <p className={styles.statLabel}>Dokter Aktif</p>
-                        <h2 className={styles.statValue}>2</h2>
+                        <h2 className={styles.statValue}>{activeDoctorCount}</h2>
                         <p className={styles.statDescription}>Status aktif</p>
                     </div>
                 </div>
@@ -326,7 +333,7 @@ function AdminDoctors() {
                     </div>
                     <div>
                         <p className={styles.statLabel}>Dokter Nonaktif</p>
-                        <h2 className={styles.statValue}>1</h2>
+                        <h2 className={styles.statValue}>{inactiveDoctorCount}</h2>
                         <p className={styles.statDescription}>Status nonaktif</p>
                     </div>
                 </div>
@@ -585,10 +592,7 @@ function AdminDoctors() {
                                                     : "Tampilkan password"
                                             }
                                         >
-                                            <span
-                                                className={`${styles.eyeIcon} ${showPassword ? styles.eyeClosed : ""
-                                                    }`}
-                                            />
+                                            {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                                         </button>
                                     </div>
 

@@ -125,7 +125,7 @@ function Chat() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const requestedSessionId = searchParams.get("sessionId");
-  const { user, incrementConsultations } = useAuth();
+  const { user } = useAuth();
   const id = Number(doctorId);
   const doctor = useMemo(
     () => getSavedDoctorProfile(doctorsList.find((d) => d.id === id)),
@@ -170,6 +170,16 @@ function Chat() {
       String(entry.id) === String(sessionId) && Number(entry.doctorId) === id;
 
     if (existingCompleted) {
+      writeUserHistory(
+        user.id,
+        "ongoing",
+        ongoing.filter((entry) => !sameSession(entry))
+      );
+      writeUserHistory(
+        user.id,
+        "scheduled",
+        scheduled.filter((entry) => !sameSession(entry))
+      );
       setActiveSessionId(existingCompleted.id);
       setIsCompletedSession(true);
       setMessages([
@@ -183,10 +193,20 @@ function Chat() {
       setIsTyping(false);
       return;
     } else if (existingOngoing) {
+      writeUserHistory(
+        user.id,
+        "scheduled",
+        scheduled.filter((entry) => !sameSession(entry))
+      );
       setActiveSessionId(existingOngoing.id);
       setIsCompletedSession(false);
     } else if (existingScheduled) {
       const activeEntry = { ...existingScheduled, status: "Berlangsung" };
+      writeUserHistory(
+        user.id,
+        "scheduled",
+        scheduled.filter((entry) => !sameSession(entry))
+      );
       writeUserHistory(
         user.id,
         "ongoing",
@@ -381,8 +401,6 @@ function Chat() {
       ...baseDone.filter((entry) => !matchesSession(entry)),
     ];
     writeUserHistory(user.id, "completed", updatedDone);
-    incrementConsultations();
-
     setShowEndModal(false);
     navigate("/riwayat", { state: { tab: "Selesai" } });
   }
@@ -445,7 +463,13 @@ function Chat() {
             className={`${styles.msgRow} ${msg.from === "user" ? styles.msgUser : styles.msgDoctor}`}
           >
             {msg.from === "doctor" && (
-              <div className={styles.msgAvatar}>{doctor.initials}</div>
+              <div className={styles.msgAvatar}>
+                {doctor.image ? (
+                  <img src={doctor.image} alt="" />
+                ) : (
+                  doctor.initials
+                )}
+              </div>
             )}
             <div className={styles.msgBubble}>
               <p>{msg.text}</p>
@@ -461,7 +485,13 @@ function Chat() {
 
         {isTyping && (
           <div className={`${styles.msgRow} ${styles.msgDoctor}`}>
-            <div className={styles.msgAvatar}>{doctor.initials}</div>
+            <div className={styles.msgAvatar}>
+              {doctor.image ? (
+                <img src={doctor.image} alt="" />
+              ) : (
+                doctor.initials
+              )}
+            </div>
             <div className={`${styles.msgBubble} ${styles.typingBubble}`}>
               <span className={styles.dot} />
               <span className={styles.dot} />
